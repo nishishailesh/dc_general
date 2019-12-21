@@ -7,26 +7,50 @@ $link=get_link($GLOBALS['main_user'],$GLOBALS['main_pass']);
 
 main_menu();
 echo '<div id=response></div>';
-if($_POST['action']=='edit_general')
-{
-	edit_sample($link,$_POST['sample_id']);
-}
-if($_POST['action']=='upload')
-{
-	save_result_blob($link,$_POST['sample_id']);
-	edit_sample($link,$_POST['sample_id']);
-}
 
+if($_POST['action']=='get_mrd')
+{
+	get_mrd($link);
+}
+elseif($_POST['action']=='view_mrd')
+{
+	view_mrd($link,$_POST['mrd']);
+}
 
 //////////////user code ends////////////////
 tail();
 
-//echo '<pre>';print_r($_POST);print_r($_FILES);echo '</pre>';
+//echo '<pre>';print_r($_POST);echo '</pre>';
 
 //////////////Functions///////////////////////
 
+function get_mrd()
+{
+	$YY=strftime("%y");
 
-//////////////Functions///////////////////////
+echo '<form method=post>';
+echo '<div class="basic_form">';
+	echo '	<label class="my_label text-danger" for="mrd">MRD</label>
+			<input size=13 id=mrd name=mrd class="form-control text-danger" required="required" type=text pattern="SUR/[0-9][0-9]/[0-9]{8}" placeholder="MRD" value="SUR/'.$YY.'/"\>
+			<p class="help"><span class=text-danger>Must have</span> 8 digit after SUR/YY/</p>';
+echo '</div>';
+echo '<button type=submit class="btn btn-primary form-control" name=action value=view_mrd>View</button>';
+echo '<input type=hidden name=session_name value=\''.session_name().'\'>';
+echo '</form>';
+}
+
+function view_mrd($link,$mrd)
+{
+	$sql='select sample_id from result where examination_id=1 and result=\''.$mrd.'\'';
+	$result=run_query($link,$GLOBALS['database'],$sql);
+	while($ar=get_single_row($result))
+	{
+		//print_r($ar);
+		//view_sample($link,$ar['sample_id']);
+		edit_sample($link,$ar['sample_id']);
+	}
+	
+}
 
 ?>
 <style>
@@ -157,4 +181,57 @@ $(document).ready
 		}
 	);
 
+</script>
+<script>
+var selected_ex=[]
+var selected_profile=[]
+var selected_ex_blob=[]
+
+function select_examination_js(me,ex_id,list_id)
+{
+	if(selected_ex.indexOf(ex_id) !== -1)
+	{
+		selected_ex.splice(selected_ex.indexOf(ex_id),1)
+		document.getElementById(list_id).value=selected_ex
+		me.classList.remove('bg-warning')
+	}
+	else
+	{
+		selected_ex.push(ex_id);
+		document.getElementById(list_id).value=selected_ex
+		me.classList.add('bg-warning')
+	}
+}
+
+function select_profile_js(me,ex_id,list_id)
+{
+	if(selected_profile.indexOf(ex_id) !== -1)
+	{
+		selected_profile.splice(selected_profile.indexOf(ex_id),1)
+		document.getElementById(list_id).value=selected_profile
+		me.classList.remove('bg-warning')
+	}
+	else
+	{
+		selected_profile.push(ex_id);
+		document.getElementById(list_id).value=selected_profile
+		me.classList.add('bg-warning')
+	}
+}	
+
+function select_examination_blob_js(me,ex_id,list_id)
+{
+	if(selected_ex_blob.indexOf(ex_id) !== -1)
+	{
+		selected_ex_blob.splice(selected_ex_blob.indexOf(ex_id),1)
+		document.getElementById(list_id).value=selected_ex_blob
+		me.classList.remove('bg-warning')
+	}
+	else
+	{
+		selected_ex_blob.push(ex_id);
+		document.getElementById(list_id).value=selected_ex_blob
+		me.classList.add('bg-warning')
+	}
+}					
 </script>
