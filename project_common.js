@@ -1,34 +1,3 @@
-<?php
-//$GLOBALS['nojunk']='';
-require_once 'project_common.php';
-require_once 'base/verify_login.php';
-	////////User code below/////////////////////
-$link=get_link($GLOBALS['main_user'],$GLOBALS['main_pass']);
-
-main_menu();
-echo '<div id=response></div>';
-if($_POST['action']=='edit_general')
-{
-	edit_sample($link,$_POST['sample_id']);
-}
-if($_POST['action']=='upload')
-{
-	save_result_blob($link,$_POST['sample_id']);
-	edit_sample($link,$_POST['sample_id']);
-}
-
-
-//////////////user code ends////////////////
-tail();
-
-//echo '<pre>';print_r($_POST);print_r($_FILES);echo '</pre>';
-
-//////////////Functions///////////////////////
-
-
-//////////////Functions///////////////////////
-
-?>
 <style>
 
 @media only screen and (max-width: 400px) 
@@ -135,8 +104,7 @@ $(document).ready
 	(
 		function()
 		{
-			//$("input[type!=file]").change(
-			$(".autosave").change(
+			$("input[type!=file]").change(
 								function()
 								{
 									
@@ -158,4 +126,57 @@ $(document).ready
 		}
 	);
 
+</script>
+<script>
+var selected_ex=[]
+var selected_profile=[]
+var selected_ex_blob=[]
+
+function select_examination_js(me,ex_id,list_id)
+{
+	if(selected_ex.indexOf(ex_id) !== -1)
+	{
+		selected_ex.splice(selected_ex.indexOf(ex_id),1)
+		document.getElementById(list_id).value=selected_ex
+		me.classList.remove('bg-warning')
+	}
+	else
+	{
+		selected_ex.push(ex_id);
+		document.getElementById(list_id).value=selected_ex
+		me.classList.add('bg-warning')
+	}
+}
+
+function select_profile_js(me,ex_id,list_id)
+{
+	if(selected_profile.indexOf(ex_id) !== -1)
+	{
+		selected_profile.splice(selected_profile.indexOf(ex_id),1)
+		document.getElementById(list_id).value=selected_profile
+		me.classList.remove('bg-warning')
+	}
+	else
+	{
+		selected_profile.push(ex_id);
+		document.getElementById(list_id).value=selected_profile
+		me.classList.add('bg-warning')
+	}
+}	
+
+function select_examination_blob_js(me,ex_id,list_id)
+{
+	if(selected_ex_blob.indexOf(ex_id) !== -1)
+	{
+		selected_ex_blob.splice(selected_ex_blob.indexOf(ex_id),1)
+		document.getElementById(list_id).value=selected_ex_blob
+		me.classList.remove('bg-warning')
+	}
+	else
+	{
+		selected_ex_blob.push(ex_id);
+		document.getElementById(list_id).value=selected_ex_blob
+		me.classList.add('bg-warning')
+	}
+}					
 </script>

@@ -46,8 +46,8 @@ function view_mrd($link,$mrd)
 	while($ar=get_single_row($result))
 	{
 		//print_r($ar);
-		//view_sample($link,$ar['sample_id']);
-		edit_sample($link,$ar['sample_id']);
+		view_sample($link,$ar['sample_id']);
+		//edit_sample($link,$ar['sample_id']);
 	}
 	
 }
@@ -159,7 +159,8 @@ $(document).ready
 	(
 		function()
 		{
-			$("input[type!=file]").change(
+			//$("input[type!=file]").change(
+					$(".autosave").change(
 								function()
 								{
 									
