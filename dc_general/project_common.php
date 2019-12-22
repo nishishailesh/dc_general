@@ -246,6 +246,7 @@ function edit_field($link,$examination_id,$result_array,$sample_id,$readonly='')
 	{
 		if(isset($edit_specification->{'type'})){$type=$edit_specification->{'type'};}else{$type='text';}
 		if(isset($edit_specification->{'help'})){$help=$edit_specification->{'help'};}else{$help='No help';}
+		if(isset($edit_specification->{'help'})){$help=$edit_specification->{'help'};}else{$help='No help';}
 	}
 	else
 	{
@@ -269,7 +270,7 @@ function edit_field($link,$examination_id,$result_array,$sample_id,$readonly='')
 						data-exid="'.$examination_id.'" 
 						data-sid="'.$sample_id.'" 
 						class="form-control autosave" 
-						type=\''.$edit_specification->{'type'}.'\' 
+						type=\''.$type.'\' 
 						value=\''.$result.'\'>
 					<p class="help">'.$edit_specification->{'help'}.'</p>';
 		echo '</div>';
