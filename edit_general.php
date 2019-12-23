@@ -41,7 +41,7 @@ tail();
 	
 	.my_label
 	 {
-		 display:none
+		 display:block
 	 }
 	 	
 	 .help
@@ -155,6 +155,57 @@ $(document).ready
 										);
 								}
 							);
+							
+							
+					$(".autosave-yesno").click(
+								function()
+								{
+									if($(this).val()!='yes')
+									{
+										$(this).val('yes')
+										$(this).html('yes')
+									}
+									else
+									{
+										$(this).val('no')
+										$(this).html('no')
+									}
+									
+									$.post(
+											"save_record.php",
+											{
+												examination_id: $(this).attr('data-exid'),
+												sample_id: $(this).attr('data-sid'),
+												result: $(this).val()
+											 },
+											function(data,status)
+											{
+												//alert("Data: " + data + "\nStatus: " + status);
+												$("#response").html(data)
+											}
+										);
+								}
+							);
+
+					$(".autosave-select").change(
+								function()
+								{									
+									$.post(
+											"save_record.php",
+											{
+												examination_id: $(this).attr('data-exid'),
+												sample_id: $(this).attr('data-sid'),
+												result: $(this).val()
+											 },
+											function(data,status)
+											{
+												//alert("Data: " + data + "\nStatus: " + status);
+												$("#response").html(data)
+											}
+										);
+								}
+							);
+							
 		}
 	);
 

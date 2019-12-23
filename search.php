@@ -8,13 +8,17 @@ $link=get_link($GLOBALS['main_user'],$GLOBALS['main_pass']);
 main_menu();
 echo '<div id=response></div>';
 
-if($_POST['action']=='get_mrd')
+if($_POST['action']=='get_search_condition')
 {
-	get_mrd($link);
+	get_search_condition($link);
 }
-elseif($_POST['action']=='view_mrd')
+elseif($_POST['action']=='set_search')
 {
-	view_mrd($link,$_POST['mrd']);
+	set_search($link);
+}
+elseif($_POST['action']=='search')
+{
+	search($link);
 }
 
 //////////////user code ends////////////////
@@ -24,31 +28,65 @@ tail();
 
 //////////////Functions///////////////////////
 
-function get_mrd()
+function get_search_condition($link)
 {
-	$YY=strftime("%y");
-
-echo '<form method=post>';
-echo '<div class="basic_form">';
-	echo '	<label class="my_label text-danger" for="mrd">MRD</label>
-			<input size=13 id=mrd name=mrd class="form-control text-danger" required="required" type=text pattern="SUR/[0-9][0-9]/[0-9]{8}" placeholder="MRD" value="SUR/'.$YY.'/"\>
-			<p class="help"><span class=text-danger>Must have</span> 8 digit after SUR/YY/</p>';
-echo '</div>';
-echo '<button type=submit class="btn btn-primary form-control" name=action value=view_mrd>View</button>';
-echo '<input type=hidden name=session_name value=\''.session_name().'\'>';
-echo '</form>';
+	echo '<form method=post>';
+	echo '<div class="basic_form">';
+	get_examination_data($link);
+	echo '</div>';
+	echo '<button type=submit class="btn btn-primary form-control" name=action value=set_search>Set Search</button>';
+	echo '<input type=hidden name=session_name value=\''.session_name().'\'>';
+	echo '</form>';
 }
 
-function view_mrd($link,$mrd)
+function set_search($link)
 {
-	$sql='select sample_id from result where examination_id=1 and result=\''.$mrd.'\'';
-	$result=run_query($link,$GLOBALS['database'],$sql);
-	while($ar=get_single_row($result))
+	$ex_requested=explode(',',$_POST['list_of_selected_examination']);
+	echo '<form method=post>';
+		foreach($ex_requested as $v)
+		{
+			$examination_details=get_one_examination_details($link,$v);
+			echo '<div class="basic_form">';
+			echo '	<label class="my_label" for="'.$examination_details['name'].'">'.$examination_details['name'].'</label>
+					<input 
+						id="'.$examination_details['name'].'" 
+						name="'.$examination_details['examination_id'].'" 
+						data-exid="'.$examination_details['examination_id'].'" 
+						class="form-control" >
+					<p class="help">Enter details for search</p>';
+			echo '</div>';
+		}
+	echo '<button type=submit class="btn btn-primary form-control" name=action value=search>Search</button>';
+	echo '<input type=hidden name=session_name value=\''.session_name().'\'>';
+	echo '</form>';
+}
+
+function search($link)
+{
+	print_r($_POST);
+	//Array ( [14] => 8sdf [17] => dfs8 [42] => dfs 88 [39] => dfs435 54354 [action] => search [session_name] => sn_1545807877 ) 
+	$where='';
+	$count=0;
+	foreach($_POST as $k=>$v)
 	{
-		//print_r($ar);
-		view_sample($link,$ar['sample_id']);
-		//edit_sample($link,$ar['sample_id']);
+		if(is_int($k))
+		{
+			$where=$where.' (examination_id=\''.$k.'\' and result like \'%'.$v.'%\') or ';
+		}
+		$count++;
 	}
+	$where='select * from result where '.substr($where,0,-3);
+	
+	echo $where;
+	
+	//$sql='select sample_id from result where result=\''.$mrd.'\'';
+	//$result=run_query($link,$GLOBALS['database'],$sql);
+	//while($ar=get_single_row($result))
+	//{
+		//print_r($ar);
+		//view_sample($link,$ar['sample_id']);
+		//edit_sample($link,$ar['sample_id']);
+	//}
 	
 }
 
