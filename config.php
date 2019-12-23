@@ -1,5 +1,5 @@
 <?php
-$GLOBALS['main_user_location']='/var/gmcs_config/db_config.php';
+$GLOBALS['main_user_location']='/var/gmcs_config/staff.conf';
 $GLOBALS['user_database']='dc_general';
 $GLOBALS['user_table']='user';
 $GLOBALS['user_id']='user';

@@ -19,7 +19,7 @@ elseif($_POST['action']=='set_search')
 elseif($_POST['action']=='search')
 {
 	$search_array=prepare_search_array($link);
-	//print_r($search_array);
+	print_r($search_array);
 	$first=TRUE;
 	$temp=array();
 	foreach ($search_array as $sk=>$sv)
@@ -27,12 +27,7 @@ elseif($_POST['action']=='search')
 		$temp=get_sample_with_condition($link,$sk,$sv,$temp,$first);
 		$first=FALSE;
 	}
-	//print_r($temp);
-	foreach ($temp as $sid)
-	{
-		view_sample($link,$sid);
-		echo '<br>';
-	}	
+	print_r($temp);
 }
 
 //////////////user code ends////////////////
@@ -75,12 +70,65 @@ function set_search($link)
 	echo '</form>';
 }
 
-function prepare_search_array($link)
+function search($link)
 {
+	print_r($_POST);
+	//Array ( [14] => 8sdf [17] => dfs8 [42] => dfs 88 [39] => dfs435 54354 [action] => search [session_name] => sn_1545807877 ) 
+	$where='';
+	$count=0;
 	foreach($_POST as $k=>$v)
 	{
 		if(is_int($k))
 		{
+			$where=$where.' (examination_id=\''.$k.'\' and result like \'%'.$v.'%\') or ';
+		}
+		$count++;
+	}
+	$where='select * from result where '.substr($where,0,-3);
+	
+	echo $where;
+	
+	//$sql='select sample_id from result where result=\''.$mrd.'\'';
+	//$result=run_query($link,$GLOBALS['database'],$sql);
+	//while($ar=get_single_row($result))
+	//{
+		//print_r($ar);
+		//view_sample($link,$ar['sample_id']);
+		//edit_sample($link,$ar['sample_id']);
+	//}
+	
+}
+
+<<<<<<< HEAD
+function mk_sr($link)
+{
+	$sr=array();
+=======
+function prepare_search_array($link)
+{
+>>>>>>> bf0497b782078f0c5b406fc0caab936bf9891dd4
+	foreach($_POST as $k=>$v)
+	{
+		if(is_int($k))
+		{
+<<<<<<< HEAD
+			$sr[$k]=$v;
+		}
+	}	
+	print_r($sr);
+}
+
+function deep_search($link,$sid_array,$exid,$exv)
+{
+	$temp=array();
+	
+	$sql='select * from result where (examination_id=\''.$k.'\' and result like \'%'.$v.'%\') or ';
+		}
+		$count++;
+	}
+	$where='select * from result where '.substr($where,0,-3);
+	
+=======
 			$ret[$k]=$v;
 		}
 	}	
@@ -97,7 +145,6 @@ function get_sample_with_condition($link,$exid,$ex_result,$sid_array=array(),$fi
 				where 
 					examination_id=\''.$exid.'\' and 
 					result like \'%'.$ex_result.'%\' ';
-		echo $sql.'<br>';
 		$result=run_query($link,$GLOBALS['database'],$sql);
 		while($ar=get_single_row($result))
 		{
@@ -112,9 +159,8 @@ function get_sample_with_condition($link,$exid,$ex_result,$sid_array=array(),$fi
 		$sql='select sample_id from result 
 				where 
 					examination_id=\''.$exid.'\' and 
-					result like \'%'.$ex_result.'%\' and
+					result like \'%'.$ex_result.'%\'
 					sample_id=\''.$v.'\'';
-		//echo $sql.'<br>';
 		$result=run_query($link,$GLOBALS['database'],$sql);
 		if(get_row_count($result)>0)
 		{
@@ -122,6 +168,7 @@ function get_sample_with_condition($link,$exid,$ex_result,$sid_array=array(),$fi
 		}
 	}
 	return $ret;
+>>>>>>> bf0497b782078f0c5b406fc0caab936bf9891dd4
 }
 
 ?>
