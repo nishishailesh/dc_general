@@ -133,7 +133,10 @@ function  last_autoincrement_insert($link)
 	return mysqli_insert_id($link);
 }
 
-
+function get_row_count($result)
+{
+  return mysqli_num_rows($result);
+}
 ////////////////////////////////////////
 
 ?>

@@ -18,7 +18,16 @@ elseif($_POST['action']=='set_search')
 }
 elseif($_POST['action']=='search')
 {
-	search($link);
+	$search_array=prepare_search_array($link);
+	print_r($search_array);
+	$first=TRUE;
+	$temp=array();
+	foreach ($search_array as $sk=>$sv)
+	{
+		$temp=get_sample_with_condition($link,$sk,$sv,$temp,$first);
+		$first=FALSE;
+	}
+	print_r($temp);
 }
 
 //////////////user code ends////////////////
@@ -88,6 +97,53 @@ function search($link)
 		//edit_sample($link,$ar['sample_id']);
 	//}
 	
+}
+
+function prepare_search_array($link)
+{
+	foreach($_POST as $k=>$v)
+	{
+		if(is_int($k))
+		{
+			$ret[$k]=$v;
+		}
+	}	
+	return $ret;
+}
+
+function get_sample_with_condition($link,$exid,$ex_result,$sid_array=array(),$first=FALSE)
+{
+	$ret=array();
+	
+	if($first===TRUE)
+	{
+		$sql='select sample_id from result 
+				where 
+					examination_id=\''.$exid.'\' and 
+					result like \'%'.$ex_result.'%\' ';
+		$result=run_query($link,$GLOBALS['database'],$sql);
+		while($ar=get_single_row($result))
+		{
+			$ret[]=$ar['sample_id'];
+		}
+		return $ret;
+	}
+	
+	//else do as follows
+	foreach($sid_array as $v)
+	{
+		$sql='select sample_id from result 
+				where 
+					examination_id=\''.$exid.'\' and 
+					result like \'%'.$ex_result.'%\'
+					sample_id=\''.$v.'\'';
+		$result=run_query($link,$GLOBALS['database'],$sql);
+		if(get_row_count($result)>0)
+		{
+			$ret[]=$v;
+		}
+	}
+	return $ret;
 }
 
 ?>
