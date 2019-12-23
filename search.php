@@ -18,7 +18,7 @@ elseif($_POST['action']=='set_search')
 }
 elseif($_POST['action']=='search')
 {
-	search($link);
+	deep_search($link);
 }
 
 //////////////user code ends////////////////
@@ -87,6 +87,31 @@ function search($link)
 		//view_sample($link,$ar['sample_id']);
 		//edit_sample($link,$ar['sample_id']);
 	//}
+	
+}
+
+function mk_sr($link)
+{
+	$sr=array();
+	foreach($_POST as $k=>$v)
+	{
+		if(is_int($k))
+		{
+			$sr[$k]=$v;
+		}
+	}	
+	print_r($sr);
+}
+
+function deep_search($link,$sid_array,$exid,$exv)
+{
+	$temp=array();
+	
+	$sql='select * from result where (examination_id=\''.$k.'\' and result like \'%'.$v.'%\') or ';
+		}
+		$count++;
+	}
+	$where='select * from result where '.substr($where,0,-3);
 	
 }
 
