@@ -106,7 +106,59 @@ function view_sample($link,$sample_id)
 			echo '</div>
 			<div class="help border border-dark">Click on ID number (green button) to edit</div>';
 			
-	echo '<div class="my_label border border-info data_header">Name</div><div class=" border border-info">Data</div><div class="help  border border-info">Help</div>';
+	echo '<div class="my_label border border-info  data_header">Name</div>
+	<div class=" border border-info  data_header">Data</div>
+	<div class="help  border border-info  data_header">Help</div>';
+	while($ar=get_single_row($result))
+	{
+		//print_r($ar);
+		$examination_details=get_one_examination_details($link,$ar['examination_id']);
+		$edit_specification=json_decode($examination_details['edit_specification']);
+		$h=isset($edit_specification->{'help'})?($edit_specification->{'help'}):'No help';
+		//print_r($edit_specification);
+		//print_r($examination_details);
+		echo '	<div class="my_label border border-dark text-wrap">'.$examination_details['name'].'</div>
+				<div class="border border-dark"><pre class="m-0 p-0 border-0">'.htmlspecialchars($ar['result']).'</pre></div>
+				<div class="help border border-dark">'.($h).'</div>';
+	}
+	
+	$sql_blob='select * from result_blob where sample_id=\''.$sample_id.'\'';
+	$result_blob=run_query($link,$GLOBALS['database'],$sql_blob);
+	while($ar_blob=get_single_row($result_blob))
+	{
+		//print_r($ar);
+		$examination_blob_details=get_one_examination_details($link,$ar_blob['examination_id']);
+		//print_r($examination_details);
+		echo '	
+				<div class=my_label>'.$examination_blob_details['name'].'</div>
+				<div>';
+				echo_download_button_two_pk('result_blob','result',
+									'sample_id',$sample_id,
+									'examination_id',$examination_blob_details['examination_id'],
+									$sample_id.'-'.$examination_blob_details['examination_id'].'-'.$ar_blob['fname'],
+									round(strlen($ar_blob['result'])/1024,0));
+				echo '</div>';
+				echo '<div  class=help  >Current File:'.$ar_blob['fname'].'</div>';
+	}	
+		
+	echo '</div>';
+}
+
+function view_sample_no_profile($link,$sample_id)
+{
+	$sql='select * from result where sample_id=\''.$sample_id.'\'';
+	$result=run_query($link,$GLOBALS['database'],$sql);
+	
+	echo '<div class="basic_form">';
+	echo '	<div class="my_label border border-dark">ID</div>
+			<div class=" border border-dark">';
+			sample_id_edit_button($sample_id);
+			echo '</div>
+			<div class="help border border-dark">Click on ID number (green button) to edit</div>';
+			
+	echo '<div class="my_label border border-info  data_header">Name</div>
+	<div class=" border border-info  data_header">Data</div>
+	<div class="help  border border-info  data_header">Help</div>';
 	while($ar=get_single_row($result))
 	{
 		//print_r($ar);
@@ -310,8 +362,9 @@ function edit_field($link,$examination_id,$result_array,$sample_id,$readonly='')
 					<p class="help">'.$help.'</p>';
 		echo '</div>';
 	}
-	else  
+	elseif($type=='date')
 	{
+		$step=isset($edit_specification['step'])?$edit_specification['step']:1;
 		echo '<div class="basic_form">';
 			echo '	<label class="my_label" for="'.$examination_details['name'].'">'.$examination_details['name'].'</label>
 					<input 
@@ -323,6 +376,22 @@ function edit_field($link,$examination_id,$result_array,$sample_id,$readonly='')
 						class="form-control autosave" 
 						type=\''.$type.'\' 
 						value=\''.$result.'\'>
+					<p class="help">'.$help.'</p>';
+		echo '</div>';
+	}	
+	else  
+	{
+		echo '<div class="basic_form">';
+			echo '	<label class="my_label" for="'.$examination_details['name'].'">'.$examination_details['name'].'</label>
+					<textarea 
+						'.$readonly.'
+						id="'.$examination_details['name'].'" 
+						name="'.$examination_id.'" 
+						data-exid="'.$examination_id.'" 
+						data-sid="'.$sample_id.'" 
+						class="form-control autosave" 
+						type=\''.$type.'\' >'.
+						htmlspecialchars($result,ENT_QUOTES).'</textarea>
 					<p class="help">'.$help.'</p>';
 		echo '</div>';
 	}

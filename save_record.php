@@ -26,7 +26,7 @@ function save_result()
 	$link=get_link($GLOBALS['main_user'],$GLOBALS['main_pass']);
 	$sql='update result
 			set 
-				result=\''.$_POST['result'].'\'	
+				result=\''.my_safe_string($link,$_POST['result']).'\'	
 			where 
 				sample_id=\''.$_POST['sample_id'].'\' 
 				and

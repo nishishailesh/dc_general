@@ -200,7 +200,7 @@ function get_sample_with_condition($link,$exid,$ex_result,$sid_array=array(),$fi
 	  grid-template-columns: 30% 70%;
 	}	
 
-	 .help , #main_menu, #root_menu, #data_header
+	 .help , #main_menu, #root_menu, .data_header
 	 {
 		 display:none
 	 }
