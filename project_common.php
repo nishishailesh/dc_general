@@ -3,13 +3,13 @@
 function main_menu()
 {
 	echo '
+		<form method=post class="form-group m-0 p-0">
 	
 	<div class="dropdown btn-group m-0 p-0">
-		<form method=post class="form-group m-0 p-0">
 			<input type=hidden name=session_name value=\''.session_name().'\'>
-			<button class="btn btn-primary m-0 p-0" formaction=new_general.php type=submit name=action value=new_general>New</button>
-			<button class="btn btn-primary m-0 p-0" formaction=view_mrd.php type=submit name=action value=get_mrd>View</button>			
-			<button class="btn btn-primary m-0 p-0" formaction=search.php type=submit name=action value=get_search_condition>Search</button>			
+			<button class="btn btn-primary border-danger m-0 p-0" formaction=new_general.php type=submit name=action value=new_general>New</button>
+			<button class="btn btn-primary border-danger m-0 p-0" formaction=view_mrd.php type=submit name=action value=get_mrd>View</button>			
+			<button class="btn btn-primary border-danger m-0 p-0" formaction=search.php type=submit name=action value=get_search_condition>Search</button>			
 			<!--
 			<button class="btn btn-primary dropdown-toggle m-0 p-0" type="button" data-toggle="dropdown">New</button>
 			<div class="dropdown-menu m-0 p-0">		
@@ -17,8 +17,8 @@ function main_menu()
 					<button class="btn btn-secondary btn-block m-0 p-0" formaction=new_opd.php type=submit name=action value=new_opd>New (OPD)</button>
 			</div>
 			-->
-		</form>
 	</div>
+		</form>
 	';		
 }
 
