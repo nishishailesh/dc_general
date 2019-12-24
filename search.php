@@ -2,6 +2,7 @@
 //$GLOBALS['nojunk']='';
 require_once 'project_common.php';
 require_once 'base/verify_login.php';
+echo '<link rel="stylesheet" type="text/css" media="print" href="bootstrap/css/bootstrap.min.css">';
 	////////User code below/////////////////////
 $link=get_link($GLOBALS['main_user'],$GLOBALS['main_pass']);
 
@@ -28,6 +29,8 @@ elseif($_POST['action']=='search')
 		$first=FALSE;
 	}
 	//print_r($temp);
+	
+	echo '<h2>Discharge Summary O&G, NCH, Surat</h2>';
 	foreach ($temp as $sid)
 	{
 		view_sample($link,$sid);
@@ -97,7 +100,7 @@ function get_sample_with_condition($link,$exid,$ex_result,$sid_array=array(),$fi
 				where 
 					examination_id=\''.$exid.'\' and 
 					result like \'%'.$ex_result.'%\' ';
-		echo $sql.'<br>';
+		//echo $sql.'<br>';
 		$result=run_query($link,$GLOBALS['database'],$sql);
 		while($ar=get_single_row($result))
 		{
@@ -189,6 +192,25 @@ function get_sample_with_condition($link,$exid,$ex_result,$sid_array=array(),$fi
 	}	  
 }
 
+@media only print 
+{
+	.basic_form 
+	{
+	  display: grid;
+	  grid-template-columns: 30% 70%;
+	}	
+
+	 .help , #main_menu, #root_menu, #data_header
+	 {
+		 display:none
+	 }
+	 	
+	.ex_profile 
+	{
+	  display: grid;
+	  grid-template-columns: auto auto auto auto auto auto auto auto;
+	}	  
+}
 </style>
 
 <script>

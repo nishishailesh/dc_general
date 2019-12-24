@@ -5,7 +5,7 @@ function main_menu()
 	echo '
 		<form method=post class="form-group m-0 p-0">
 	
-	<div class="dropdown btn-group m-0 p-0">
+	<div id=main_menu class="dropdown btn-group m-0 p-0">
 			<input type=hidden name=session_name value=\''.session_name().'\'>
 			<button class="btn btn-primary border-danger m-0 p-0" formaction=new_general.php type=submit name=action value=new_general>New</button>
 			<button class="btn btn-primary border-danger m-0 p-0" formaction=view_mrd.php type=submit name=action value=get_mrd>View</button>			
@@ -106,7 +106,7 @@ function view_sample($link,$sample_id)
 			echo '</div>
 			<div class="help border border-dark">Click on ID number (green button) to edit</div>';
 			
-	echo '<div class="my_label border border-info">Name</div><div class=" border border-info">Data</div><div class="help  border border-info">Help</div>';
+	echo '<div class="my_label border border-info data_header">Name</div><div class=" border border-info">Data</div><div class="help  border border-info">Help</div>';
 	while($ar=get_single_row($result))
 	{
 		//print_r($ar);

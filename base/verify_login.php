@@ -104,7 +104,7 @@ if($verification_code==100 && !isset($GLOBALS['nojunk']))
 {
 	//echo 'user verified';
 	head($GLOBALS['application_name']);
-	echo '<form method=post class="form-group">
+	echo '<form id=root_menu method=post class="form-group">
 			<input type=hidden name=session_name value=\''.session_name().'\'>
 			<button class="btn btn-primary" type=submit name=action value=change_password>Change Password</button>
 			<button class="btn btn-primary" type=submit name=action value=logout>Logout</button>
