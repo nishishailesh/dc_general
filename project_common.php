@@ -383,7 +383,7 @@ function edit_field($link,$examination_id,$result_array,$sample_id,$readonly='')
 	{
 		echo '<div class="basic_form">';
 			echo '	<label class="my_label" for="'.$examination_details['name'].'">'.$examination_details['name'].'</label>
-					<textarea 
+					<textarea rows=1
 						'.$readonly.'
 						id="'.$examination_details['name'].'" 
 						name="'.$examination_id.'" 
@@ -713,17 +713,23 @@ function insert_one_examination_without_result($link,$sample_id,$examination_id)
 			values ("'.$sample_id.'","'.$examination_id.'")';
 	//echo $sql.'(without)<br>';
 	if(!run_query($link,$GLOBALS['database'],$sql))
-		{echo 'Data not inserted(without)<br>'; return false;}
-	else{return true;}
+	{
+		echo $sql.'(without)<br>';
+		echo 'Data not inserted(without)<br>'; 
+		return false;
+	}	else{return true;}
 }
 
 function insert_one_examination_blob_without_result($link,$sample_id,$examination_id)
 {
 	$sql='insert into result_blob (sample_id,examination_id)
 			values ("'.$sample_id.'","'.$examination_id.'")';
-	//echo $sql.'(without)<br>';
 	if(!run_query($link,$GLOBALS['database'],$sql))
-		{echo 'Data not inserted(without)<br>'; return false;}
+	{	
+		echo $sql.'(without)<br>';
+		echo 'Data not inserted(without)<br>'; 
+		return false;
+	}
 	else{return true;}
 }
 
