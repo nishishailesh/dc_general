@@ -93,55 +93,57 @@ function view_sample_table($link,$sample_id)
 		
 	echo '</table>';
 }
-
 function view_sample($link,$sample_id)
 {
-	$sql='select * from result where sample_id=\''.$sample_id.'\'';
-	$result=run_query($link,$GLOBALS['database'],$sql);
-	
-	echo '<div class="basic_form">';
-	echo '	<div class="my_label border border-dark">ID</div>
-			<div class=" border border-dark">';
-			sample_id_edit_button($sample_id);
-			echo '</div>
-			<div class="help border border-dark">Click on ID number (green button) to edit</div>';
-			
-	echo '<div class="my_label border border-info  data_header">Name</div>
-	<div class=" border border-info  data_header">Data</div>
-	<div class="help  border border-info  data_header">Help</div>';
-	while($ar=get_single_row($result))
+	$ex_list=get_result_of_sample_in_array($link,$sample_id);
+	$profile_wise_ex_list=ex_to_profile($link,$ex_list);
+	//echo '<pre>';
+	//print_r($profile_wise_ex_list);
+	//echo '</pre>';
+	echo '<div class="basic_form">
+			<div class=my_label >Edit ID</div>
+			<div>';sample_id_edit_button($sample_id);echo '</div>
+			<div class=help>Unique Number to get this data</div>';
+		echo '</div>';		
+	foreach($profile_wise_ex_list as $kp=>$vp)
 	{
-		//print_r($ar);
-		$examination_details=get_one_examination_details($link,$ar['examination_id']);
-		$edit_specification=json_decode($examination_details['edit_specification']);
-		$h=isset($edit_specification->{'help'})?($edit_specification->{'help'}):'No help';
-		//print_r($edit_specification);
-		//print_r($examination_details);
-		echo '	<div class="my_label border border-dark text-wrap">'.$examination_details['name'].'</div>
-				<div class="border border-dark"><pre class="m-0 p-0 border-0">'.htmlspecialchars($ar['result']).'</pre></div>
-				<div class="help border border-dark">'.($h).'</div>';
+		$pinfo=get_profile_info($link,$kp);
+		echo '<h3>'.$pinfo['name'].'</h3><div></div><div></div>';
+		foreach($vp as $ex_id)
+		{
+			if($ex_id==1){$readonly='readonly';}else{$readonly='';}
+			
+			view_field($link,$ex_id,$ex_list[$ex_id]);	
+		}
 	}
 	
-	$sql_blob='select * from result_blob where sample_id=\''.$sample_id.'\'';
-	$result_blob=run_query($link,$GLOBALS['database'],$sql_blob);
-	while($ar_blob=get_single_row($result_blob))
+	$rblob=get_result_blob_of_sample_in_array($link,$sample_id);
+	//print_r($rblob);
+	foreach($rblob as $kblob=>$vblob)
 	{
+		$sql_blob='select * from result_blob where sample_id=\''.$sample_id.'\' and examination_id=\''.$kblob.'\'';
+		$result_blob=run_query($link,$GLOBALS['database'],$sql_blob);
+		$ar_blob=get_single_row($result_blob);
+	
 		//print_r($ar);
-		$examination_blob_details=get_one_examination_details($link,$ar_blob['examination_id']);
+		$examination_blob_details=get_one_examination_details($link,$kblob);
+		
 		//print_r($examination_details);
-		echo '	
+		echo '	<div class="basic_form">
+	
 				<div class=my_label>'.$examination_blob_details['name'].'</div>
 				<div>';
 				echo_download_button_two_pk('result_blob','result',
 									'sample_id',$sample_id,
 									'examination_id',$examination_blob_details['examination_id'],
-									$sample_id.'-'.$examination_blob_details['examination_id'].'-'.$ar_blob['fname'],
-									round(strlen($ar_blob['result'])/1024,0));
+									$sample_id.'-'.$examination_blob_details['examination_id'].'-'.$vblob
+									);
 				echo '</div>';
-				echo '<div  class=help  >Current File:'.$ar_blob['fname'].'</div>';
-	}	
+				echo '<div  class=help  >Current File:'.$ar_blob['fname'].'</div>
+				</div>';
+				
+	}
 		
-	echo '</div>';
 }
 
 function view_sample_no_profile($link,$sample_id)
@@ -204,7 +206,7 @@ function sample_id_edit_button($sample_id)
 }
 
 
-function echo_download_button_two_pk($table,$field,$primary_key,$primary_key_value,$primary_key2,$primary_key_value2,$postfix='',$fsize)
+function echo_download_button_two_pk($table,$field,$primary_key,$primary_key_value,$primary_key2,$primary_key_value2,$postfix='')
 {
 	echo '<form method=post action=download2.php>
 			<input type=hidden name=table value=\''.$table.'\'>
@@ -220,24 +222,51 @@ function echo_download_button_two_pk($table,$field,$primary_key,$primary_key_val
 			formtarget=_blank
 			type=submit
 			name=action
-			value=download>Download('.$fsize.' kb)</button>
+			value=download>Download</button>
 		</form>';
 }
 
+function ex_to_profile($link,$ex_array)
+{
+	$sql='select * from profile';
+	$result=run_query($link,$GLOBALS['database'],$sql);
+	$ret=array();
+	while($ar=get_single_row($result))
+	{
+		$ex_of_profile=explode(',',$ar['examination_id_list']);
+		foreach($ex_of_profile as $v)
+		{
+			if(array_key_exists($v,$ex_array))
+			{
+				$ret[$ar['profile_id']][]=$v;
+			}
+		}
+	}
+	return $ret;
+}
 function edit_sample($link,$sample_id)
 {
-	$r=get_result_of_sample_in_array($link,$sample_id);
-	echo '<div class="bg-success">
-	<div class="basic_form">
-		<div class=my_label >Edit ID</div>
-		<div>'.$sample_id.'</div>
-		<div class=help>Unique Number to get this data</div>
-	</div>
-	</div>';
-	foreach($r as $k=>$v)
+	$ex_list=get_result_of_sample_in_array($link,$sample_id);
+	$profile_wise_ex_list=ex_to_profile($link,$ex_list);
+	//echo '<pre>';
+	//print_r($profile_wise_ex_list);
+	//echo '</pre>';
+	
+	echo '<div class="basic_form">
+			<div class=my_label >Edit ID</div>
+			<div>'.$sample_id.'</div>
+			<div class=help>Unique Number to get this data</div>';	
+	echo '</div>';
+
+	foreach($profile_wise_ex_list as $kp=>$vp)
 	{
-		if($k==1){$readonly='readonly';}else{$readonly='';}
-		edit_field($link,$k,$r,$sample_id,$readonly);	
+		$pinfo=get_profile_info($link,$kp);
+		echo '<h3>'.$pinfo['name'].'</h3><div></div><div></div>';
+		foreach($vp as $ex_id)
+		{
+			if($ex_id==1){$readonly='readonly';}else{$readonly='';}
+			edit_field($link,$ex_id,$ex_list,$sample_id,$readonly);	
+		}
 	}
 	
 	$rblob=get_result_blob_of_sample_in_array($link,$sample_id);
@@ -246,7 +275,6 @@ function edit_sample($link,$sample_id)
 	{
 		edit_blob_field($link,$kblob,$rblob,$sample_id);	
 	}
-		
 }
 
 function get_result_of_sample_in_array($link,$sample_id)
@@ -269,7 +297,7 @@ function get_result_blob_of_sample_in_array($link,$sample_id)
 	$result_array=array();
 	while($ar=get_single_row($result))
 	{
-		$result_array[$ar['examination_id']]='';	//no blob as result
+		$result_array[$ar['examination_id']]=$ar['fname'];	//no blob as result
 	}
 	//print_r($result_array);
 	return $result_array;
@@ -396,6 +424,17 @@ function edit_field($link,$examination_id,$result_array,$sample_id,$readonly='')
 		echo '</div>';
 	}
 }
+
+function view_field($link,$ex_id,$ex_result)
+{
+		$examination_details=get_one_examination_details($link,$ex_id);
+				echo '<div class="basic_form">';
+		echo '	<div class="my_label border border-dark text-wrap">'.$examination_details['name'].'</div>
+				<div class="border border-dark"><pre class="m-0 p-0 border-0">'.htmlspecialchars($ex_result).'</pre></div>
+				<div class="help border border-dark">'.$examination_details['description'].'</div>';
+				echo '</div>';
+}				
+
 
 function edit_blob_field($link,$examination_id,$result_array,$sample_id)
 {
@@ -606,9 +645,16 @@ function get_profile_data($link)
 	echo '</div>';
 }
 
+function get_profile_info($link,$profile_id)
+{
+	$sql='select * from profile where profile_id=\''.$profile_id.'\'';
+	$result=run_query($link,$GLOBALS['database'],$sql);
+	return get_single_row($result);
+}
+
 function get_examination_blob_data($link)
 {
-	$sql='select * from examination_blob';
+	$sql='select * from examination where examination_id>10000';
 	$result=run_query($link,$GLOBALS['database'],$sql);
 	echo '<div id="examination_blob" class="tab-pane ">';
 	while($ar=get_single_row($result))

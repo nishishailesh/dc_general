@@ -59,3 +59,23 @@
 	  grid-template-columns: auto auto auto auto auto auto auto auto;
 	}	  
 }
+
+@media only print 
+{
+	.basic_form 
+	{
+	  display: grid;
+	  grid-template-columns: 30% 70%;
+	}	
+
+	 .help , #main_menu, #root_menu, .data_header
+	 {
+		 display:none
+	 }
+	 	
+	.ex_profile 
+	{
+	  display: grid;
+	  grid-template-columns: auto auto auto auto auto auto auto auto;
+	}	  
+}

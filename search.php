@@ -32,7 +32,6 @@ elseif($_POST['action']=='search')
 	}
 	//print_r($temp);
 	
-	echo '<h2>Discharge Summary O&G, NCH, Surat</h2>';
 	foreach ($temp as $sid)
 	{
 		view_sample($link,$sid);
