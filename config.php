@@ -9,6 +9,7 @@ $GLOBALS['expirydate_field']='expirydate';
 $GLOBALS['application_name']='Clinical Records NCHS';
 
 $GLOBALS['database']='dc_general';
+$GLOBALS['mrd']=1;
 
 $GLOBALS['department']=array
 (

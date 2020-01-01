@@ -275,6 +275,8 @@ function edit_sample($link,$sample_id)
 	{
 		edit_blob_field($link,$kblob,$rblob,$sample_id);	
 	}
+    add_get_data($link,$sample_id);
+   
 }
 
 function get_result_of_sample_in_array($link,$sample_id)
@@ -316,7 +318,30 @@ function edit_basic($link,$result_array)
 	echo '</div>';
 	echo '</div>';
 }
-
+function delete_examination($link,$sample_id,$examination_id)
+{
+	if($examination_id>=100001)
+	{
+		$sql='DELETE FROM `result_blob`
+          WHERE `sample_id` = \''.$sample_id.'\' AND `examination_id` = \''.$examination_id.'\'';
+	}
+	else{
+		$sql='DELETE FROM `result`
+          WHERE `sample_id` = \''.$sample_id.'\' AND `examination_id` = \''.$examination_id.'\'';
+	    }
+		$result=run_query($link,'dc_general',$sql);
+		//echo $sql;
+		if($result==false)
+			{
+					echo '<h3 style="color:green;"> record not Deleted</h3>';
+			}
+			else
+			{
+					echo '<h3 style="color:green;"> 1 record  Deleted</h3>';
+			}
+		
+     edit_sample($link,$sample_id);     
+}
 function edit_field($link,$examination_id,$result_array,$sample_id,$readonly='')
 {
 	if(array_key_exists($examination_id,$result_array)){$result=$result_array[$examination_id];}else{$result='';}
@@ -330,7 +355,8 @@ function edit_field($link,$examination_id,$result_array,$sample_id,$readonly='')
 	if($type=='yesno')
 	{
 		echo '<div class="basic_form">';
-			echo '	<label class="my_label" for="'.$examination_details['name'].'">'.$examination_details['name'].'</label>
+		set_lable($_POST['session_name'],$_POST['sample_id'],$examination_details,$examination_id);
+			echo '
 					<button 
 						'.$readonly.'
 						id="'.$examination_details['name'].'" 
@@ -348,6 +374,7 @@ function edit_field($link,$examination_id,$result_array,$sample_id,$readonly='')
 	{
 		$option=isset($edit_specification['option'])?explode(',',$edit_specification['option']):array();
 		$option_html='';
+		
 		foreach($option as $v)
 		{
 			if($v==$result)
@@ -361,7 +388,8 @@ function edit_field($link,$examination_id,$result_array,$sample_id,$readonly='')
 		}
 		
 		echo '<div class="basic_form">';
-			echo '	<label class="my_label" for="'.$examination_details['name'].'">'.$examination_details['name'].'</label>
+		set_lable($_POST['session_name'],$_POST['sample_id'],$examination_details,$examination_id);
+			echo '
 					<select '.$readonly.' 
 						id="'.$examination_details['name'].'" 
 						name="'.$examination_id.'" 
@@ -376,7 +404,8 @@ function edit_field($link,$examination_id,$result_array,$sample_id,$readonly='')
 	{
 		$step=isset($edit_specification['step'])?$edit_specification['step']:1;
 		echo '<div class="basic_form">';
-			echo '	<label class="my_label" for="'.$examination_details['name'].'">'.$examination_details['name'].'</label>
+		set_lable($_POST['session_name'],$_POST['sample_id'],$examination_details,$examination_id);
+			echo '
 					<input 
 						'.$readonly.'
 						id="'.$examination_details['name'].'" 
@@ -394,8 +423,9 @@ function edit_field($link,$examination_id,$result_array,$sample_id,$readonly='')
 	{
 		$step=isset($edit_specification['step'])?$edit_specification['step']:1;
 		echo '<div class="basic_form">';
-			echo '	<label class="my_label" for="'.$examination_details['name'].'">'.$examination_details['name'].'</label>
-					<input 
+		set_lable($_POST['session_name'],$_POST['sample_id'],$examination_details,$examination_id);
+			echo '
+						<input 
 						'.$readonly.'
 						id="'.$examination_details['name'].'" 
 						name="'.$examination_id.'" 
@@ -410,7 +440,8 @@ function edit_field($link,$examination_id,$result_array,$sample_id,$readonly='')
 	else  
 	{
 		echo '<div class="basic_form">';
-			echo '	<label class="my_label" for="'.$examination_details['name'].'">'.$examination_details['name'].'</label>
+		set_lable($_POST['session_name'],$_POST['sample_id'],$examination_details,$examination_id);
+			echo '
 					<textarea rows=1
 						'.$readonly.'
 						id="'.$examination_details['name'].'" 
@@ -422,7 +453,8 @@ function edit_field($link,$examination_id,$result_array,$sample_id,$readonly='')
 						htmlspecialchars($result,ENT_QUOTES).'</textarea>
 					<p class="help">'.$help.'</p>';
 		echo '</div>';
-	}
+	} 
+
 }
 
 function view_field($link,$ex_id,$ex_result)
@@ -439,6 +471,7 @@ function view_field($link,$ex_id,$ex_result)
 function edit_blob_field($link,$examination_id,$result_array,$sample_id)
 {
 	//get examination details
+	
 	$examination_details=get_one_examination_details($link,$examination_id);
 	//get result_blob details
 	$sql_blob='select * from result_blob where sample_id=\''.$sample_id.'\' and examination_id=\''.$examination_id.'\' ';
@@ -446,8 +479,9 @@ function edit_blob_field($link,$examination_id,$result_array,$sample_id)
 	$ar_blob=get_single_row($result_blob);
 
 	echo '<div class="basic_form">';
-	echo '	<div class=my_label>'.$examination_details['name'].'</div>
-			<div>';	
+	set_lable($_POST['session_name'],$_POST['sample_id'],$examination_details,$examination_id);
+	//echo '	<div class=my_label>'.$examination_details['name'].'</div>
+	echo'<div>';	
 	echo_download_button_two_pk('result_blob','result',
 								'sample_id',$sample_id,
 								'examination_id',$examination_details['examination_id'],
@@ -614,6 +648,26 @@ function get_data($link)
 
 	echo '</form>';			
 }
+function add_get_data($link,$sample_id)
+{
+		
+	echo '<form method=post class="bg-light jumbotron">';
+	echo '<input type=hidden name=session_name value=\''.session_name().'\'>';
+   echo '<input type=hidden name=sample_id value=\''.$sample_id.'\'>';
+   echo'<div class="text-info"><h3>To Add New details select from below and save</h3></div>';
+	echo '<ul class="nav nav-pills nav-justified">
+			<li><button class="btn btn-secondary" type=button  data-toggle="tab" href="#examination">Examinations</button></li>
+			<li><button class="btn btn-secondary" type=button  data-toggle="tab" href="#profile">Profiles</button></li>
+			<li><button type=submit class="btn btn-primary form-control" name=action value=insert>Save</button></li>
+		</ul>';
+	echo '<div class="tab-content">';
+		get_examination_data($link);
+		get_profile_data($link);
+	echo '</div>';
+
+	echo '</form>';			
+}
+
 
 function get_examination_data($link)
 {
@@ -730,7 +784,59 @@ function save_insert($link)
 	
 	return $sample_id;
 }
+function add_new_examination_and_profile($link,$sample_id,$list_of_selected_examination='',$list_of_selected_profile='')
+{
+	
+	$requested=array();
+	$ex_requested=explode(',',$list_of_selected_examination);
+	$requested=array_merge($requested,$ex_requested);
+	
+	$profile_requested=explode(',',$list_of_selected_profile);
+	foreach($profile_requested as $value)
+	{
+		$psql='select * from profile where profile_id=\''.$value.'\'';
+		$result=run_query($link,$GLOBALS['database'],$psql);
+		$ar=get_single_row($result);
+		$profile_ex_requested=explode(',',$ar['examination_id_list']);
+		$requested=array_merge($requested,$profile_ex_requested);
+	}
 
+	$requested=array_filter(array_unique($requested));
+	$list_of_selected_examination=$list_of_selected_examination;
+	foreach ($requested as $ex_requested)
+	{
+			if($ex_requested<100000)
+			{
+				insert_one_examination_without_result($link,$sample_id,$ex_requested);
+			}
+			else  //blob as attachment 
+			{
+				insert_one_examination_blob_without_result($link,$sample_id,$ex_requested);
+			}
+	}
+}
+function set_lable($session_name,$sample_id,$examination_details,$examination_id)
+{
+		echo '
+			<div class="my_lable">';
+			
+		if($examination_details['examination_id']!=$GLOBALS['mrd'])
+		{
+		echo '
+				<form method=post class="d-inline">
+					<input type=hidden name=session_name value=\''.$session_name.'\'>
+					<input type=hidden name=sample_id value=\''.$sample_id.'\'>
+					<input type=hidden name=examination_id value=\''.$examination_id.'\'>
+					
+					<button type=submit  class="btn btn-danger btn-sm d-inline m-0 p-0" name=action value=delete title=Delete>X</button>	
+				</form>
+				';
+		}
+				
+		echo '<label for="'.$examination_details['name'].'">'.$examination_details['name'].'</label>
+			</div>';
+	
+}
 function get_new_sample_id($link,$mrd)
 {
 	$sample_id=find_next_sample_id($link);
@@ -772,7 +878,7 @@ function insert_one_examination_blob_without_result($link,$sample_id,$examinatio
 			values ("'.$sample_id.'","'.$examination_id.'")';
 	if(!run_query($link,$GLOBALS['database'],$sql))
 	{	
-		echo $sql.'(without)<br>';
+		//echo $sql.'(without)<br>';
 		echo 'Data not inserted(without)<br>'; 
 		return false;
 	}
