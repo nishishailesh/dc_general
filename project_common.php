@@ -93,6 +93,8 @@ function view_sample_table($link,$sample_id)
 		
 	echo '</table>';
 }
+
+/*
 function view_sample($link,$sample_id)
 {
 	$ex_list=get_result_of_sample_in_array($link,$sample_id);
@@ -145,6 +147,66 @@ function view_sample($link,$sample_id)
 	}
 		
 }
+*/
+
+function view_sample($link,$sample_id)
+{
+	$ex_list=get_result_of_sample_in_array($link,$sample_id);
+	$profile_wise_ex_list=ex_to_profile($link,$ex_list);
+	//echo '<pre>';
+	//print_r($profile_wise_ex_list);
+	//echo '</pre>';
+	echo '<div class="basic_form">
+			<div class=my_label >Edit ID</div>
+			<div>';sample_id_edit_button($sample_id);echo '</div>
+			<div class=help>Unique Number to get this data</div>';
+	echo '</div>';		
+	foreach($profile_wise_ex_list as $kp=>$vp)
+	{
+		$pinfo=get_profile_info($link,$kp);
+		$div_id=$pinfo['name'].'_'.$sample_id;
+		//echo '<h6 data-toggle="collapse" class=sh href=\'#'.$div_id.'\' >X</h6><div></div><div></div>';
+		echo '<img src="img/show_hide.png" height=32 data-toggle="collapse" class=sh href=\'#'.$div_id.'\' ><div></div><div></div>';
+		echo '<div class="collapse show" id=\''.$div_id.'\'>';
+		echo '<h3>'.$pinfo['name'].'</h3><div></div><div></div>';
+		foreach($vp as $ex_id)
+		{
+			if($ex_id==1){$readonly='readonly';}else{$readonly='';}
+			
+			view_field($link,$ex_id,$ex_list[$ex_id]);	
+		}
+		echo '</div>';
+	}
+	
+	$rblob=get_result_blob_of_sample_in_array($link,$sample_id);
+	//print_r($rblob);
+	foreach($rblob as $kblob=>$vblob)
+	{
+		$sql_blob='select * from result_blob where sample_id=\''.$sample_id.'\' and examination_id=\''.$kblob.'\'';
+		$result_blob=run_query($link,$GLOBALS['database'],$sql_blob);
+		$ar_blob=get_single_row($result_blob);
+	
+		//print_r($ar);
+		$examination_blob_details=get_one_examination_details($link,$kblob);
+		
+		//print_r($examination_details);
+		echo '	<div class="basic_form">
+	
+				<div class=my_label>'.$examination_blob_details['name'].'</div>
+				<div>';
+				echo_download_button_two_pk('result_blob','result',
+									'sample_id',$sample_id,
+									'examination_id',$examination_blob_details['examination_id'],
+									$sample_id.'-'.$examination_blob_details['examination_id'].'-'.$vblob
+									);
+				echo '</div>';
+				echo '<div  class=help  >Current File:'.$ar_blob['fname'].'</div>
+				</div>';
+				
+	}
+	echo '<br>';	
+}
+
 
 function view_sample_no_profile($link,$sample_id)
 {
@@ -351,6 +413,8 @@ function edit_field($link,$examination_id,$result_array,$sample_id,$readonly='')
 	
 	$type=isset($edit_specification['type'])?$edit_specification['type']:'text';
 	$help=isset($edit_specification['help'])?$edit_specification['help']:'No help';
+	$pattern=isset($edit_specification['pattern'])?$edit_specification['pattern']:'';
+	$placeholder=isset($edit_specification['paaceholder'])?$edit_specification['placeholder']:'';
 	
 	if($type=='yesno')
 	{
@@ -448,6 +512,7 @@ function edit_field($link,$examination_id,$result_array,$sample_id,$readonly='')
 						name="'.$examination_id.'" 
 						data-exid="'.$examination_id.'" 
 						data-sid="'.$sample_id.'" 
+						pattern=\'"'.$pattern.'\'" 
 						class="form-control autosave" 
 						type=\''.$type.'\' >'.
 						htmlspecialchars($result,ENT_QUOTES).'</textarea>
@@ -772,7 +837,11 @@ function save_insert($link)
 	//echo '<pre>following is requested:<br>';print_r($requested);echo '</pre>';
 	foreach ($requested as $ex)
 	{
-			if($ex<100000)
+			if($ex==1)
+			{
+				//mrd inserted, do nothing
+			}
+			elseif($ex<100000)
 			{
 				insert_one_examination_without_result($link,$sample_id,$ex);
 			}
@@ -805,7 +874,11 @@ function add_new_examination_and_profile($link,$sample_id,$list_of_selected_exam
 	$list_of_selected_examination=$list_of_selected_examination;
 	foreach ($requested as $ex_requested)
 	{
-			if($ex_requested<100000)
+			if($ex_requested==1)
+			{
+				//mrd inserted, do nothing
+			}
+			elseif($ex_requested<100000)
 			{
 				insert_one_examination_without_result($link,$sample_id,$ex_requested);
 			}
@@ -815,6 +888,7 @@ function add_new_examination_and_profile($link,$sample_id,$list_of_selected_exam
 			}
 	}
 }
+
 function set_lable($session_name,$sample_id,$examination_details,$examination_id)
 {
 		echo '
