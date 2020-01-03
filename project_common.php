@@ -409,12 +409,12 @@ function edit_field($link,$examination_id,$result_array,$sample_id,$readonly='')
 	if(array_key_exists($examination_id,$result_array)){$result=$result_array[$examination_id];}else{$result='';}
 	$examination_details=get_one_examination_details($link,$examination_id);
 	$edit_specification=json_decode($examination_details['edit_specification'],true);
-	if(!$edit_specification){$edit_specication=array();}
+	if(!$edit_specification){$edit_specification=array();}
 	
 	$type=isset($edit_specification['type'])?$edit_specification['type']:'text';
 	$help=isset($edit_specification['help'])?$edit_specification['help']:'No help';
 	$pattern=isset($edit_specification['pattern'])?$edit_specification['pattern']:'';
-	$placeholder=isset($edit_specification['paaceholder'])?$edit_specification['placeholder']:'';
+	$placeholder=isset($edit_specification['placeholder'])?$edit_specification['placeholder']:'';
 	
 	if($type=='yesno')
 	{
@@ -525,13 +525,14 @@ function edit_field($link,$examination_id,$result_array,$sample_id,$readonly='')
 function view_field($link,$ex_id,$ex_result)
 {
 		$examination_details=get_one_examination_details($link,$ex_id);
+		$edit_specification=json_decode($examination_details['edit_specification'],true);
+		$help=isset($edit_specification['help'])?$edit_specification['help']:'No help';
 				echo '<div class="basic_form">';
 		echo '	<div class="my_label border border-dark text-wrap">'.$examination_details['name'].'</div>
 				<div class="border border-dark"><pre class="m-0 p-0 border-0">'.htmlspecialchars($ex_result).'</pre></div>
-				<div class="help border border-dark">'.$examination_details['description'].'</div>';
+				<div class="help border border-dark">'.$help.'</div>';
 				echo '</div>';
 }				
-
 
 function edit_blob_field($link,$examination_id,$result_array,$sample_id)
 {
