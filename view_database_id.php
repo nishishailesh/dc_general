@@ -13,13 +13,13 @@ $link=get_link($GLOBALS['main_user'],$GLOBALS['main_pass']);
 main_menu();
 echo '<div id=response></div>';
 
-if($_POST['action']=='get_mrd')
+if($_POST['action']=='get_dbid')
 {
-	get_mrd($link);
+	get_dbid($link);
 }
-elseif($_POST['action']=='view_mrd')
+elseif($_POST['action']=='view_dbid')
 {
-	view_mrd($link,$_POST['mrd']);
+	view_sample($link,$_POST['sample_id']);
 }
 
 //////////////user code ends////////////////
@@ -29,17 +29,17 @@ tail();
 
 //////////////Functions///////////////////////
 
-function get_mrd()
+function get_dbid()
 {
 	$YY=strftime("%y");
 
 echo '<form method=post>';
 echo '<div class="basic_form">';
-	echo '	<label class="my_label text-danger" for="mrd">MRD</label>
-			<input size=13 id=mrd name=mrd class="form-control text-danger" required="required" type=text pattern="SUR/[0-9][0-9]/[0-9]{8}" placeholder="MRD" value="SUR/'.$YY.'/"\>
-			<p class="help"><span class=text-danger>Must have</span> 8 digit after SUR/YY/</p>';
+	echo '	<label class="my_label text-danger" for="mrd">Database ID</label>
+			<input type=number size=13 id=mrd name=sample_id class="form-control text-danger" required="required" \>
+			<p class="help"><span class=text-danger>Must be</span> number</p>';
 echo '</div>';
-echo '<button type=submit class="btn btn-primary form-control" name=action value=view_mrd>View</button>';
+echo '<button type=submit class="btn btn-primary form-control" name=action value=view_dbid>View</button>';
 echo '<input type=hidden name=session_name value=\''.session_name().'\'>';
 echo '</form>';
 }

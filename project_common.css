@@ -50,7 +50,7 @@
 	.basic_form 
 	{
 	  display: grid;
-	  grid-template-columns: 20% 30% 50%;
+	  grid-template-columns: 20% 50% 30%;
 	}	
 	
 	.ex_profile 

@@ -8,8 +8,8 @@ function main_menu()
 	<div id=main_menu class="dropdown btn-group m-0 p-0">
 			<input type=hidden name=session_name value=\''.session_name().'\'>
 			<button class="btn btn-primary border-danger m-0 p-0" formaction=new_general.php type=submit name=action value=new_general>New</button>
-			<button class="btn btn-primary border-danger m-0 p-0" formaction=view_mrd.php type=submit name=action value=get_mrd>View</button>			
-			<button class="btn btn-primary border-danger m-0 p-0" formaction=search.php type=submit name=action value=get_search_condition>Search</button>			
+			<button class="btn btn-primary border-danger m-0 p-0" formaction=view_database_id.php type=submit name=action value=get_dbid>Search by database ID</button>			
+			<button class="btn btn-primary border-danger m-0 p-0" formaction=search.php type=submit name=action value=get_search_condition>General Search</button>			
 			<!--
 			<button class="btn btn-primary dropdown-toggle m-0 p-0" type="button" data-toggle="dropdown">New</button>
 			<div class="dropdown-menu m-0 p-0">		
@@ -157,8 +157,11 @@ function view_sample($link,$sample_id)
 	//print_r($profile_wise_ex_list);
 	//echo '</pre>';
 	echo '<div class="basic_form">
-			<div class=my_label >Edit ID</div>
-			<div>';sample_id_edit_button($sample_id);echo '</div>
+			<div class=my_label >Database ID:'.$sample_id.'</div>
+			<div>';
+				sample_id_edit_button($sample_id);
+				sample_id_view_button($sample_id);
+			echo '</div>
 			<div class=help>Unique Number to get this data</div>';
 	echo '</div>';		
 	foreach($profile_wise_ex_list as $kp=>$vp)
@@ -260,13 +263,21 @@ function view_sample_no_profile($link,$sample_id)
 
 function sample_id_edit_button($sample_id)
 {
-	echo '<form method=post action=edit_general.php>
-	<button class="btn btn-success" name=sample_id value=\''.$sample_id.'\' >'.$sample_id.'</button>
+	echo '<form method=post action=edit_general.php class="d-inline">
+	<button class="btn btn-success" name=sample_id value=\''.$sample_id.'\' >'.$sample_id.'(Edit)</button>
 	<input type=hidden name=session_name value=\''.$_POST['session_name'].'\'>
 	<input type=hidden name=action value=edit_general>
 	</form>';
 }
 
+function sample_id_view_button($sample_id)
+{
+	echo '<form method=post action=view_single.php class="d-inline">
+	<button class="btn btn-success" name=sample_id value=\''.$sample_id.'\' >'.$sample_id.'(View)</button>
+	<input type=hidden name=session_name value=\''.$_POST['session_name'].'\'>
+	<input type=hidden name=action value=view_single>
+	</form>';
+}
 
 function echo_download_button_two_pk($table,$field,$primary_key,$primary_key_value,$primary_key2,$primary_key_value2,$postfix='')
 {
@@ -313,13 +324,32 @@ function edit_sample($link,$sample_id)
 	//echo '<pre>';
 	//print_r($profile_wise_ex_list);
 	//echo '</pre>';
-	
+	echo 
+	'<div class="position-fixed bg-secondary ">
+		<button 
+		type=button
+		class="btn btn-warning"
+		 data-toggle="collapse" 
+		data-target="#advice" href="#advice">Advice</button>
+		<div class="p-3 collapse" id="advice">';
+		echo $GLOBALS['advice'];
+		echo '</div>
+	</div>';
+		
+	//echo '<div class="basic_form">
+			//<div class=my_label >Edit ID</div>
+			//<div>'.$sample_id.'</div>
+			//<div class=help>Unique Number to get this data</div>';	
+	//echo '</div>';
 	echo '<div class="basic_form">
-			<div class=my_label >Edit ID</div>
-			<div>'.$sample_id.'</div>
-			<div class=help>Unique Number to get this data</div>';	
-	echo '</div>';
-
+			<div class=my_label >Database ID</div>
+			<div>';
+				sample_id_edit_button($sample_id);
+				sample_id_view_button($sample_id);
+			echo '</div>
+			<div class=help>Unique Number to get this data</div>';
+	echo '</div>';	
+	
 	foreach($profile_wise_ex_list as $kp=>$vp)
 	{
 		$pinfo=get_profile_info($link,$kp);
