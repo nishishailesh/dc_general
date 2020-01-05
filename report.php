@@ -7,7 +7,7 @@ echo '<link rel="stylesheet" type="text/css" media="print" href="bootstrap/css/b
 echo '		  <link rel="stylesheet" href="project_common.css">
 		  <script src="project_common.js"></script>';
 $link=get_link($GLOBALS['main_user'],$GLOBALS['main_pass']);
-
+//print_r($_POST);
 main_menu();
 echo '<div id=response></div>';
 
@@ -33,13 +33,13 @@ elseif($_POST['action']=='search')
 	//print_r($temp);
 
 	$sample_id_csv = implode(',', $temp);
-	echo_export_button($sample_id_csv);
-	echo_class_button($link,'OGDC')	;
-	foreach ($temp as $sid)
-	{
-		view_sample($link,$sid);
-		echo '<br>';
-	}	
+	echo '<h3>Export is ready. click Export Button to download file</h3>';
+	echo_report_export_button($sample_id_csv,$_POST['id']);
+	//foreach ($temp as $sid)
+	//{
+		//view_sample($link,$sid);
+		//echo '<br>';
+	//}	
 }
 
 //////////////user code ends////////////////
@@ -77,10 +77,33 @@ function set_search($link)
 					<p class="help">Enter details for search</p>';
 			echo '</div>';
 		}
-	echo '<button type=submit class="btn btn-primary form-control" name=action value=search>Search</button>';
+	//echo '<button type=submit class="btn btn-primary form-control" name=action value=search>Search</button>';
+	//echo '<button type=submit class="btn btn-primary form-control" name=action value=search>Search</button>';
+	list_report_types($link);
 	echo '<input type=hidden name=session_name value=\''.session_name().'\'>';
+	echo '<input type=hidden name=action value=search>';
 	echo '</form>';
 }
+
+function list_report_types($link)
+{
+		$sql='select * from report';
+		//echo $sql.'<br>';
+		$result=run_query($link,$GLOBALS['database'],$sql);
+		while($ar=get_single_row($result))
+		{
+			echo_report_button($ar['id'],$ar['report_name']);
+		}	
+	
+	
+}
+
+function echo_report_button($id,$name)
+{
+	echo '<input type=hidden name=session_name value=\''.$_POST['session_name'].'\'>
+		<div class=print_hide><button type=submit class="btn btn-info  border-danger m-0 p-0 d-inline" name=id value=\''.$id.'\'>'.$name.'</button></div>';
+}
+
 
 function prepare_search_array($link)
 {

@@ -33,6 +33,19 @@ function select_profile_js(me,ex_id,list_id)
 	}
 }
 
+function set_print_class(jsn)
+{
+	//alert(jsn)
+	ar=JSON.parse(jsn)
+	$("[id^=ex_]").css('display','none')
+	ar.forEach(
+				function(x)
+				{
+					$("#ex_"+x).css('display','')
+				}
+	
+				)
+}
 $(document).ready
 	(
 		function()

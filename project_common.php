@@ -8,8 +8,9 @@ function main_menu()
 	<div id=main_menu class="dropdown btn-group m-0 p-0">
 			<input type=hidden name=session_name value=\''.session_name().'\'>
 			<button class="btn btn-primary border-danger m-0 p-0" formaction=new_general.php type=submit name=action value=new_general>New</button>
-			<button class="btn btn-primary border-danger m-0 p-0" formaction=view_database_id.php type=submit name=action value=get_dbid>Search by database ID</button>			
-			<button class="btn btn-primary border-danger m-0 p-0" formaction=search.php type=submit name=action value=get_search_condition>General Search</button>			
+			<button class="btn btn-primary border-danger m-0 p-0" formaction=view_database_id.php type=submit name=action value=get_dbid>View DbID</button>			
+			<button class="btn btn-primary border-danger m-0 p-0" formaction=search.php type=submit name=action value=get_search_condition>Search</button>			
+			<button class="btn btn-primary border-danger m-0 p-0" formaction=report.php type=submit name=action value=get_search_condition>Export</button>			
 			<!--
 			<button class="btn btn-primary dropdown-toggle m-0 p-0" type="button" data-toggle="dropdown">New</button>
 			<div class="dropdown-menu m-0 p-0">		
@@ -263,20 +264,20 @@ function view_sample_no_profile($link,$sample_id)
 
 function sample_id_edit_button($sample_id)
 {
-	echo '<form method=post action=edit_general.php class="d-inline">
+	echo '<div class="d-inline-block" ><form method=post action=edit_general.php class=print_hide>
 	<button class="btn btn-success" name=sample_id value=\''.$sample_id.'\' >'.$sample_id.'(Edit)</button>
 	<input type=hidden name=session_name value=\''.$_POST['session_name'].'\'>
 	<input type=hidden name=action value=edit_general>
-	</form>';
+	</form></div>';
 }
 
 function sample_id_view_button($sample_id)
 {
-	echo '<form method=post action=view_single.php class="d-inline">
+	echo '<div class="d-inline-block" ><form method=post action=view_single.php class=print_hide>
 	<button class="btn btn-success" name=sample_id value=\''.$sample_id.'\' >'.$sample_id.'(View)</button>
 	<input type=hidden name=session_name value=\''.$_POST['session_name'].'\'>
 	<input type=hidden name=action value=view_single>
-	</form>';
+	</form></div>';
 }
 
 function echo_download_button_two_pk($table,$field,$primary_key,$primary_key_value,$primary_key2,$primary_key_value2,$postfix='')
@@ -549,7 +550,6 @@ function edit_field($link,$examination_id,$result_array,$sample_id,$readonly='')
 					<p class="help">'.$help.'</p>';
 		echo '</div>';
 	} 
-
 }
 
 function view_field($link,$ex_id,$ex_result)
@@ -557,7 +557,7 @@ function view_field($link,$ex_id,$ex_result)
 		$examination_details=get_one_examination_details($link,$ex_id);
 		$edit_specification=json_decode($examination_details['edit_specification'],true);
 		$help=isset($edit_specification['help'])?$edit_specification['help']:'No help';
-				echo '<div class="basic_form">';
+				echo '<div class="basic_form " id="ex_'.$ex_id.'">';
 		echo '	<div class="my_label border border-dark text-wrap">'.$examination_details['name'].'</div>
 				<div class="border border-dark"><pre class="m-0 p-0 border-0">'.htmlspecialchars($ex_result).'</pre></div>
 				<div class="help border border-dark">'.$help.'</div>';
@@ -990,4 +990,32 @@ function insert_one_examination_blob_without_result($link,$sample_id,$examinatio
 	else{return true;}
 }
 
+function echo_export_button($sample_id_csv)
+{
+	echo'<form method=post id=export_button action=export.php class="d-inline-block">
+	<input type=hidden name=session_name value=\''.$_POST['session_name'].'\'>
+	<input type=hidden name=sample_id value=\''.$sample_id_csv.'\'>
+	<div class=print_hide><button type=submit class="btn btn-info  border-danger m-0 p-0" name=export>Export</button></div></form>';
+}
+
+
+function echo_report_export_button($sample_id_csv,$report_id)
+{
+	echo'<form method=post id=export_button action=export2.php class="d-inline-block">
+	<input type=hidden name=session_name value=\''.$_POST['session_name'].'\'>
+	<input type=hidden name=sample_id value=\''.$sample_id_csv.'\'>
+	<input type=hidden name=report_id value=\''.$report_id.'\'>
+	<div class=print_hide><button type=submit class="btn btn-info  border-danger m-0 p-0" name=export>Export</button></div></form>';
+}
+
+function echo_class_button($link,$class)
+{
+	$sql='select * from report where report_name=\'OGDC\'';
+	$result=run_query($link,$GLOBALS['database'],$sql);
+	$ar=get_single_row($result);
+	$ex_list=explode(',',$ar['examination_id']);
+	$jarray=json_encode($ex_list);
+	//echo $jarray;
+	echo '<div class="d-inline-block "><div class=print_hide><button type=button class="btn btn-info d-inline-block border-danger m-0 p-0" onclick="set_print_class(\''.htmlspecialchars($jarray).'\')">OGDC</button></div></div>';
+}
 ?>

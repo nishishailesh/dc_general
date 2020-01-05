@@ -19,6 +19,7 @@ if($_POST['action']=='get_dbid')
 }
 elseif($_POST['action']=='view_dbid')
 {
+	echo_class_button($link,'OGDC')	;
 	view_sample($link,$_POST['sample_id']);
 }
 
