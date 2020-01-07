@@ -24,8 +24,6 @@ if($_POST['action']=='delete')
 }
 if($_POST['action']=='insert')
 {
-
-   	
 	add_new_examination_and_profile($link,$_POST['sample_id'],$_POST['list_of_selected_examination'],$_POST['list_of_selected_profile']);
 	edit_sample($link,$_POST['sample_id']);
 	

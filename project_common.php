@@ -208,7 +208,7 @@ function view_sample($link,$sample_id)
 				</div>';
 				
 	}
-	echo '<br>';	
+	echo '<br><footer></footer>';	
 }
 
 
@@ -343,7 +343,7 @@ function edit_sample($link,$sample_id)
 			//<div class=help>Unique Number to get this data</div>';	
 	//echo '</div>';
 	echo '<div class="basic_form">
-			<div class=my_label >Database ID</div>
+			<div class=my_label >Database ID:'.$sample_id.'</div>
 			<div>';
 				sample_id_edit_button($sample_id);
 				sample_id_view_button($sample_id);
@@ -752,10 +752,10 @@ function get_data($link)
 function add_get_data($link,$sample_id)
 {
 		
-	echo '<form method=post class="bg-light jumbotron">';
+	echo '<form method=post class="bg-light">';
 	echo '<input type=hidden name=session_name value=\''.session_name().'\'>';
    echo '<input type=hidden name=sample_id value=\''.$sample_id.'\'>';
-   echo'<div class="text-info"><h3>To Add New details select from below and save</h3></div>';
+   echo'<div class="text-info"><h3>Insert New Fields</h3></div>';
 	echo '<ul class="nav nav-pills nav-justified">
 			<li><button class="btn btn-secondary" type=button  data-toggle="tab" href="#examination">Examinations</button></li>
 			<li><button class="btn btn-secondary" type=button  data-toggle="tab" href="#profile">Profiles</button></li>
@@ -976,8 +976,8 @@ function insert_one_examination_without_result($link,$sample_id,$examination_id)
 	//echo $sql.'(without)<br>';
 	if(!run_query($link,$GLOBALS['database'],$sql))
 	{
-		echo $sql.'(without)<br>';
-		echo 'Data not inserted(without)<br>'; 
+		//echo $sql.'(without)<br>';
+		//echo 'Data not inserted(without)<br>'; 
 		return false;
 	}	else{return true;}
 }
@@ -989,7 +989,7 @@ function insert_one_examination_blob_without_result($link,$sample_id,$examinatio
 	if(!run_query($link,$GLOBALS['database'],$sql))
 	{	
 		//echo $sql.'(without)<br>';
-		echo 'Data not inserted(without)<br>'; 
+		//echo 'Data not inserted(without)<br>'; 
 		return false;
 	}
 	else{return true;}
@@ -1023,4 +1023,90 @@ function echo_class_button($link,$class)
 	//echo $jarray;
 	echo '<div class="d-inline-block "><div class=print_hide><button type=button class="btn btn-info d-inline-block border-danger m-0 p-0" onclick="set_print_class(\''.htmlspecialchars($jarray).'\')">OGDC</button></div></div>';
 }
+
+
+
+function get_search_condition($link)
+{
+	echo '<form method=post>';
+	echo '<div class="basic_form">';
+	get_examination_data($link);
+	echo '</div>';
+	echo '<button type=submit class="btn btn-primary form-control" name=action value=set_search>Set Search</button>';
+	echo '<input type=hidden name=session_name value=\''.session_name().'\'>';
+	echo '</form>';
+}
+
+function set_search($link)
+{
+	$ex_requested=explode(',',$_POST['list_of_selected_examination']);
+	echo '<form method=post>';
+		foreach($ex_requested as $v)
+		{
+			$examination_details=get_one_examination_details($link,$v);
+			echo '<div class="basic_form">';
+			echo '	<label class="my_label" for="'.$examination_details['name'].'">'.$examination_details['name'].'</label>
+					<input 
+						id="'.$examination_details['name'].'" 
+						name="'.$examination_details['examination_id'].'" 
+						data-exid="'.$examination_details['examination_id'].'" 
+						class="form-control" >
+					<p class="help">Enter details for search</p>';
+			echo '</div>';
+		}
+	echo '<button type=submit class="btn btn-primary form-control" name=action value=search>Search</button>';
+	echo '<input type=hidden name=session_name value=\''.session_name().'\'>';
+	echo '</form>';
+}
+
+function prepare_search_array($link)
+{
+	$ret=array();
+	foreach($_POST as $k=>$v)
+	{
+		if(is_int($k) && strlen($v)>0)
+		{
+			$ret[$k]=$v;
+		}
+	}	
+	return $ret;
+}
+
+function get_sample_with_condition($link,$exid,$ex_result,$sid_array=array(),$first=FALSE)
+{
+	$ret=array();
+	
+	if($first===TRUE)
+	{
+		$sql='select sample_id from result 
+				where 
+					examination_id=\''.$exid.'\' and 
+					result like \'%'.$ex_result.'%\' ';
+		//echo $sql.'<br>';
+		$result=run_query($link,$GLOBALS['database'],$sql);
+		while($ar=get_single_row($result))
+		{
+			$ret[]=$ar['sample_id'];
+		}
+		return $ret;
+	}
+	
+	//else do as follows
+	foreach($sid_array as $v)
+	{
+		$sql='select sample_id from result 
+				where 
+					examination_id=\''.$exid.'\' and 
+					result like \'%'.$ex_result.'%\' and
+					sample_id=\''.$v.'\'';
+		//echo $sql.'<br>';
+		$result=run_query($link,$GLOBALS['database'],$sql);
+		if(get_row_count($result)>0)
+		{
+			$ret[]=$v;
+		}
+	}
+	return $ret;
+}
+
 ?>

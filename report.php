@@ -17,7 +17,7 @@ if($_POST['action']=='get_search_condition')
 }
 elseif($_POST['action']=='set_search')
 {
-	set_search($link);
+	set_search_report($link);
 }
 elseif($_POST['action']=='search')
 {
@@ -31,15 +31,16 @@ elseif($_POST['action']=='search')
 		$first=FALSE;
 	}
 	//print_r($temp);
-
-	$sample_id_csv = implode(',', $temp);
-	echo '<h3>Export is ready. click Export Button to download file</h3>';
-	echo_report_export_button($sample_id_csv,$_POST['id']);
-	//foreach ($temp as $sid)
-	//{
-		//view_sample($link,$sid);
-		//echo '<br>';
-	//}	
+	if(count($temp)>0)
+	{
+		$sample_id_csv = implode(',', $temp);
+		echo '<h3>Export is ready. click Export Button to download file</h3>';
+		echo_report_export_button($sample_id_csv,$_POST['id']);
+	}
+	else
+	{
+		echo '<h3>Nothing meaningful provided!!</h3>';
+	}
 }
 
 //////////////user code ends////////////////
@@ -49,18 +50,25 @@ tail();
 
 //////////////Functions///////////////////////
 
-function get_search_condition($link)
+
+function list_report_types($link)
 {
-	echo '<form method=post>';
-	echo '<div class="basic_form">';
-	get_examination_data($link);
-	echo '</div>';
-	echo '<button type=submit class="btn btn-primary form-control" name=action value=set_search>Set Search</button>';
-	echo '<input type=hidden name=session_name value=\''.session_name().'\'>';
-	echo '</form>';
+		$sql='select * from report';
+		//echo $sql.'<br>';
+		$result=run_query($link,$GLOBALS['database'],$sql);
+		while($ar=get_single_row($result))
+		{
+			echo_report_button($ar['id'],$ar['report_name']);
+		}
 }
 
-function set_search($link)
+function echo_report_button($id,$name)
+{
+	echo '<input type=hidden name=session_name value=\''.$_POST['session_name'].'\'>
+		<div class=print_hide><button type=submit class="btn btn-info  border-danger m-0 p-0 d-inline" name=id value=\''.$id.'\'>'.$name.'</button></div>';
+}
+
+function set_search_report($link)
 {
 	$ex_requested=explode(',',$_POST['list_of_selected_examination']);
 	echo '<form method=post>';
@@ -85,37 +93,20 @@ function set_search($link)
 	echo '</form>';
 }
 
-function list_report_types($link)
-{
-		$sql='select * from report';
-		//echo $sql.'<br>';
-		$result=run_query($link,$GLOBALS['database'],$sql);
-		while($ar=get_single_row($result))
-		{
-			echo_report_button($ar['id'],$ar['report_name']);
-		}	
-	
-	
-}
 
-function echo_report_button($id,$name)
+/*
+function get_search_condition($link)
 {
-	echo '<input type=hidden name=session_name value=\''.$_POST['session_name'].'\'>
-		<div class=print_hide><button type=submit class="btn btn-info  border-danger m-0 p-0 d-inline" name=id value=\''.$id.'\'>'.$name.'</button></div>';
+	echo '<form method=post>';
+	echo '<div class="basic_form">';
+	get_examination_data($link);
+	echo '</div>';
+	echo '<button type=submit class="btn btn-primary form-control" name=action value=set_search>Set Search</button>';
+	echo '<input type=hidden name=session_name value=\''.session_name().'\'>';
+	echo '</form>';
 }
 
 
-function prepare_search_array($link)
-{
-	foreach($_POST as $k=>$v)
-	{
-		if(is_int($k))
-		{
-			$ret[$k]=$v;
-		}
-	}	
-	return $ret;
-}
 
 function get_sample_with_condition($link,$exid,$ex_result,$sid_array=array(),$first=FALSE)
 {
@@ -153,5 +144,5 @@ function get_sample_with_condition($link,$exid,$ex_result,$sid_array=array(),$fi
 	}
 	return $ret;
 }
-
+*/
 ?>
