@@ -60,7 +60,8 @@ $(document).ready
 											{
 												examination_id: $(this).attr('data-exid'),
 												sample_id: $(this).attr('data-sid'),
-												result: $(this).val()
+												result: $(this).val(),
+												user: $(this).attr('data-user')
 											 },
 											function(data,status)
 											{
@@ -91,7 +92,8 @@ $(document).ready
 											{
 												examination_id: $(this).attr('data-exid'),
 												sample_id: $(this).attr('data-sid'),
-												result: $(this).val()
+												result: $(this).val(),
+												user: $(this).attr('data-user')
 											 },
 											function(data,status)
 											{
@@ -110,7 +112,8 @@ $(document).ready
 											{
 												examination_id: $(this).attr('data-exid'),
 												sample_id: $(this).attr('data-sid'),
-												result: $(this).val()
+												result: $(this).val(),
+												user: $(this).attr('data-user')
 											 },
 											function(data,status)
 											{

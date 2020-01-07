@@ -68,7 +68,7 @@
 	  grid-template-columns: 30% 70%;
 	}	
 
-	 .help , #main_menu, #root_menu, .data_header, .sh
+	 .help , #main_menu, #root_menu, .data_header, .sh, .print_hide
 	 {
 		 display:none
 	 }
