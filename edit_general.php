@@ -12,11 +12,14 @@ echo '<div id=response></div>';
 if($_POST['action']=='edit_general')
 {
 	edit_sample($link,$_POST['sample_id']);
+	//view_primary_sample($link,$_POST['sample_id']);
 }
 if($_POST['action']=='upload')
 {
 	save_result_blob($link,$_POST['sample_id']);
+	
 	edit_sample($link,$_POST['sample_id']);
+	//view_primary_sample($link,$_POST['sample_id']);
 }
 if($_POST['action']=='delete')
 {
@@ -26,7 +29,7 @@ if($_POST['action']=='insert')
 {
 	add_new_examination_and_profile($link,$_POST['sample_id'],$_POST['list_of_selected_examination'],$_POST['list_of_selected_profile']);
 	edit_sample($link,$_POST['sample_id']);
-	
+	//view_primary_sample($link,$_POST['sample_id']);
 }
 //////////////user code ends////////////////
 tail();

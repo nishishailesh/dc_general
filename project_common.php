@@ -95,60 +95,14 @@ function view_sample_table($link,$sample_id)
 	echo '</table>';
 }
 
-/*
-function view_sample($link,$sample_id)
+function echo_result_header()
 {
-	$ex_list=get_result_of_sample_in_array($link,$sample_id);
-	$profile_wise_ex_list=ex_to_profile($link,$ex_list);
-	//echo '<pre>';
-	//print_r($profile_wise_ex_list);
-	//echo '</pre>';
 	echo '<div class="basic_form">
-			<div class=my_label >Edit ID</div>
-			<div>';sample_id_edit_button($sample_id);echo '</div>
-			<div class=help>Unique Number to get this data</div>';
-		echo '</div>';		
-	foreach($profile_wise_ex_list as $kp=>$vp)
-	{
-		$pinfo=get_profile_info($link,$kp);
-		echo '<h3>'.$pinfo['name'].'</h3><div></div><div></div>';
-		foreach($vp as $ex_id)
-		{
-			if($ex_id==1){$readonly='readonly';}else{$readonly='';}
-			
-			view_field($link,$ex_id,$ex_list[$ex_id]);	
-		}
-	}
-	
-	$rblob=get_result_blob_of_sample_in_array($link,$sample_id);
-	//print_r($rblob);
-	foreach($rblob as $kblob=>$vblob)
-	{
-		$sql_blob='select * from result_blob where sample_id=\''.$sample_id.'\' and examination_id=\''.$kblob.'\'';
-		$result_blob=run_query($link,$GLOBALS['database'],$sql_blob);
-		$ar_blob=get_single_row($result_blob);
-	
-		//print_r($ar);
-		$examination_blob_details=get_one_examination_details($link,$kblob);
-		
-		//print_r($examination_details);
-		echo '	<div class="basic_form">
-	
-				<div class=my_label>'.$examination_blob_details['name'].'</div>
-				<div>';
-				echo_download_button_two_pk('result_blob','result',
-									'sample_id',$sample_id,
-									'examination_id',$examination_blob_details['examination_id'],
-									$sample_id.'-'.$examination_blob_details['examination_id'].'-'.$vblob
-									);
-				echo '</div>';
-				echo '<div  class=help  >Current File:'.$ar_blob['fname'].'</div>
-				</div>';
-				
-	}
-		
+			<div class=my_label >Examination</div>
+			<div>Result</div>
+			<div class=help>Ref. Intervals , Units (Method)</div>';
+	echo '</div>';	
 }
-*/
 
 function view_sample($link,$sample_id)
 {
@@ -164,7 +118,8 @@ function view_sample($link,$sample_id)
 				sample_id_view_button($sample_id);
 			echo '</div>
 			<div class=help>Unique Number to get this data</div>';
-	echo '</div>';		
+	echo '</div>';	
+	
 	foreach($profile_wise_ex_list as $kp=>$vp)
 	{
 		$pinfo=get_profile_info($link,$kp);
@@ -173,9 +128,13 @@ function view_sample($link,$sample_id)
 		echo '<img src="img/show_hide.png" height=32 data-toggle="collapse" class=sh href=\'#'.$div_id.'\' ><div></div><div></div>';
 		echo '<div class="collapse show" id=\''.$div_id.'\'>';
 		echo '<h3>'.$pinfo['name'].'</h3><div></div><div></div>';
+		if($pinfo['profile_id']>$GLOBALS['max_non_ex_profile'])
+		{
+			echo_result_header();
+		}
 		foreach($vp as $ex_id)
 		{
-			if($ex_id==1){$readonly='readonly';}else{$readonly='';}
+			if($ex_id==$GLOBALS['mrd']){$readonly='readonly';}else{$readonly='';}
 			
 			view_field($link,$ex_id,$ex_list[$ex_id]);	
 		}
@@ -208,6 +167,47 @@ function view_sample($link,$sample_id)
 				</div>';
 				
 	}
+	echo '<br><footer></footer>';	
+}
+
+
+function view_primary_sample($link,$sample_id)
+{
+	$ex_list=get_primary_result_of_sample_in_array($link,$sample_id);
+	$profile_wise_ex_list=ex_to_profile($link,$ex_list);
+	//echo '<pre>';
+	//print_r($profile_wise_ex_list);
+	//echo '</pre>';
+	echo '<div class="basic_form">
+			<div class=my_label >Database ID:'.$sample_id.'</div>
+			<div>';
+				sample_id_edit_button($sample_id);
+				sample_id_view_button($sample_id);
+			echo '</div>
+			<div class=help>Unique Number to get this data</div>';
+	echo '</div>';	
+	
+	foreach($profile_wise_ex_list as $kp=>$vp)
+	{
+		$pinfo=get_profile_info($link,$kp);
+		$div_id=$pinfo['name'].'_'.$sample_id;
+		//echo '<h6 data-toggle="collapse" class=sh href=\'#'.$div_id.'\' >X</h6><div></div><div></div>';
+		echo '<img src="img/show_hide.png" height=32 data-toggle="collapse" class=sh href=\'#'.$div_id.'\' ><div></div><div></div>';
+		echo '<div class="collapse show" id=\''.$div_id.'\'>';
+		echo '<h3>'.$pinfo['name'].'</h3><div></div><div></div>';
+		if($pinfo['profile_id']>$GLOBALS['max_non_ex_profile'])
+		{
+			echo_result_header();
+		}
+		foreach($vp as $ex_id)
+		{
+			if($ex_id==$GLOBALS['mrd']){$readonly='readonly';}else{$readonly='';}
+			
+			view_field($link,$ex_id,$ex_list[$ex_id]);	
+		}
+		echo '</div>';
+	}
+	
 	echo '<br><footer></footer>';	
 }
 
@@ -265,7 +265,7 @@ function view_sample_no_profile($link,$sample_id)
 function sample_id_edit_button($sample_id)
 {
 	echo '<div class="d-inline-block" ><form method=post action=edit_general.php class=print_hide>
-	<button class="btn btn-success" name=sample_id value=\''.$sample_id.'\' >'.$sample_id.'(Edit)</button>
+	<button class="btn btn-success btn-sm" name=sample_id value=\''.$sample_id.'\' >'.$sample_id.'(Edit)</button>
 	<input type=hidden name=session_name value=\''.$_POST['session_name'].'\'>
 	<input type=hidden name=action value=edit_general>
 	</form></div>';
@@ -274,7 +274,7 @@ function sample_id_edit_button($sample_id)
 function sample_id_view_button($sample_id)
 {
 	echo '<div class="d-inline-block" ><form method=post action=view_single.php class=print_hide>
-	<button class="btn btn-success" name=sample_id value=\''.$sample_id.'\' >'.$sample_id.'(View)</button>
+	<button class="btn btn-success btn-sm" name=sample_id value=\''.$sample_id.'\' >'.$sample_id.'(View)</button>
 	<input type=hidden name=session_name value=\''.$_POST['session_name'].'\'>
 	<input type=hidden name=action value=view_single>
 	</form></div>';
@@ -318,6 +318,7 @@ function ex_to_profile($link,$ex_array)
 	}
 	return $ret;
 }
+
 function edit_sample($link,$sample_id)
 {
 	$ex_list=get_result_of_sample_in_array($link,$sample_id);
@@ -329,9 +330,9 @@ function edit_sample($link,$sample_id)
 	'<div class="position-fixed bg-secondary ">
 		<button 
 		type=button
-		class="btn btn-warning"
+		class="btn btn-warning btn-sm"
 		 data-toggle="collapse" 
-		data-target="#advice" href="#advice">Advice</button>
+		data-target="#advice" href="#advice">Paste-Bin</button>
 		<div class="p-3 collapse" id="advice">';
 		echo $GLOBALS['advice'];
 		echo '</div>
@@ -347,6 +348,7 @@ function edit_sample($link,$sample_id)
 			<div>';
 				sample_id_edit_button($sample_id);
 				sample_id_view_button($sample_id);
+				echo '<button class="btn btn-sm btn-warning" onclick="sync_all()">Sync All</button>';
 			echo '</div>
 			<div class=help>Unique Number to get this data</div>';
 	echo '</div>';	
@@ -357,7 +359,7 @@ function edit_sample($link,$sample_id)
 		echo '<h3>'.$pinfo['name'].'</h3><div></div><div></div>';
 		foreach($vp as $ex_id)
 		{
-			if($ex_id==1){$readonly='readonly';}else{$readonly='';}
+			if($ex_id==$GLOBALS['mrd']){$readonly='readonly';}else{$readonly='';}
 			edit_field($link,$ex_id,$ex_list,$sample_id,$readonly);	
 		}
 	}
@@ -375,6 +377,19 @@ function edit_sample($link,$sample_id)
 function get_result_of_sample_in_array($link,$sample_id)
 {
 	$sql='select * from result where sample_id=\''.$sample_id.'\'';
+	$result=run_query($link,$GLOBALS['database'],$sql);
+	$result_array=array();
+	while($ar=get_single_row($result))
+	{
+		$result_array[$ar['examination_id']]=$ar['result'];
+	}
+	//print_r($result_array);
+	return $result_array;
+}
+
+function get_primary_result_of_sample_in_array($link,$sample_id)
+{
+	$sql='select * from primary_result where sample_id=\''.$sample_id.'\'';
 	$result=run_query($link,$GLOBALS['database'],$sql);
 	$result_array=array();
 	while($ar=get_single_row($result))
@@ -422,7 +437,7 @@ function delete_examination($link,$sample_id,$examination_id)
 		$sql='DELETE FROM `result`
           WHERE `sample_id` = \''.$sample_id.'\' AND `examination_id` = \''.$examination_id.'\'';
 	    }
-		$result=run_query($link,'dc_general',$sql);
+		$result=run_query($link,$GLOBALS['database'],$sql);
 		//echo $sql;
 		if($result==false)
 			{
@@ -435,6 +450,28 @@ function delete_examination($link,$sample_id,$examination_id)
 		
      edit_sample($link,$sample_id);     
 }
+
+function get_primary_result($link,$sample_id,$examination_id)
+{
+	$sql='select * from primary_result where sample_id=\''.$sample_id.'\' and examination_id=\''.$examination_id.'\'';
+	$result=run_query($link,$GLOBALS['database'],$sql);
+	$result_array=array();
+	
+	$values='';
+	while($ar=get_single_row($result))
+	{
+		//$values=$values.$ar['result'].',';
+		$element_id='pr_id_'.$sample_id.'_'.$examination_id;
+		echo '<button onclick="sync_result(this)"
+					class="btn btn-sm btn-outline-dark  no-gutters align-top"
+					id=\''.$element_id.'\' 
+					data-sid=\''.$sample_id.'\' 
+					data-exid=\''.$examination_id.'\' 
+					value=\''.$ar['result'].'\' >'.$ar['result'].'</button>';
+	}
+	//return $values;
+}
+
 function edit_field($link,$examination_id,$result_array,$sample_id,$readonly='')
 {
 	if(array_key_exists($examination_id,$result_array)){$result=$result_array[$examination_id];}else{$result='';}
@@ -447,9 +484,10 @@ function edit_field($link,$examination_id,$result_array,$sample_id,$readonly='')
 	$pattern=isset($edit_specification['pattern'])?$edit_specification['pattern']:'';
 	$placeholder=isset($edit_specification['placeholder'])?$edit_specification['placeholder']:'';
 	
+	$element_id='r_id_'.$sample_id.'_'.$examination_id;
 	if($type=='yesno')
 	{
-		echo '<div class="basic_form">';
+		echo '<div class="basic_form  no-gutters">';
 		set_lable($_POST['session_name'],$_POST['sample_id'],$examination_details,$examination_id);
 			echo '
 					<button 
@@ -535,26 +573,98 @@ function edit_field($link,$examination_id,$result_array,$sample_id,$readonly='')
 						value=\''.$result.'\'>
 					<p class="help">'.$help.'</p>';
 		echo '</div>';
-	}	
-	else  
+	}
+	elseif($type=='datetime-local')
 	{
+		$step=isset($edit_specification['step'])?$edit_specification['step']:1;
 		echo '<div class="basic_form">';
 		set_lable($_POST['session_name'],$_POST['sample_id'],$examination_details,$examination_id);
 			echo '
-					<textarea rows=1
+						<input 
 						'.$readonly.'
 						id="'.$examination_details['name'].'" 
 						name="'.$examination_id.'" 
 						data-exid="'.$examination_id.'" 
 						data-sid="'.$sample_id.'" 
 						data-user="'.$_SESSION['login'].'" 
-						pattern=\'"'.$pattern.'\'" 
 						class="form-control autosave" 
-						type=\''.$type.'\' >'.
-						htmlspecialchars($result,ENT_QUOTES).'</textarea>
+						type=\''.$type.'\' 
+						value=\''.$result.'\'>
 					<p class="help">'.$help.'</p>';
 		echo '</div>';
+	}		
+	else  
+	{
+		echo '<div class="basic_form  m-0 p-0 no-gutters">';
+			set_lable($_POST['session_name'],$_POST['sample_id'],$examination_details,$examination_id);
+			echo '<div class="m-0 p-0 no-gutters">';
+				echo '<div class="d-inline-block  no-gutters">';
+				echo '<textarea rows=1
+					'.$readonly.'
+					id="'.$element_id.'" 
+					name="'.$examination_id.'" 
+					data-exid="'.$examination_id.'" 
+					data-sid="'.$sample_id.'" 
+					data-user="'.$_SESSION['login'].'" 
+					pattern=\'"'.$pattern.'\'" 
+					class="form-control autosave p-0 m-0 no-gutters" 
+					type=\''.$type.'\' >'.
+					htmlspecialchars($result,ENT_QUOTES).'</textarea>';
+				echo '</div>';
+				echo '<div class="d-inline  no-gutters">';
+					get_primary_result($link,$sample_id,$examination_id);
+				echo '</div>';
+			echo '</div>';
+			echo '<p class="help">'.$help.'</p>';	
+		echo '</div>';
 	} 
+}
+
+function decide_alert($result,$interval)
+{
+	if(strlen($interval)==0){return '';}
+	$is=explode('-',$interval);
+	//100-1000-4000-11000-20000-200000
+	if($result<$is[2])
+	{
+		if($result<$is[1])
+		{
+			if($result<$is[0])
+			{
+				return '<<<Absurd Low>>>';
+			}
+			else
+			{
+				return '<<<Critical Low>>>';
+			}
+		}
+		else
+		{
+			return '<<<Abnormal Low>>>';
+		}
+	}
+	elseif($result>$is[3])
+	{
+		if($result>$is[4])
+		{
+			if($result>$is[5])
+			{
+				return '<<<Absurd High>>>';
+			}
+			else
+			{
+				return '<<<Critical High>>>';
+			}
+		}
+		else
+		{
+			return '<<<Abnormal High>>>';
+		}
+	}
+	else
+	{
+		return '';
+	}	
 }
 
 function view_field($link,$ex_id,$ex_result)
@@ -562,9 +672,11 @@ function view_field($link,$ex_id,$ex_result)
 		$examination_details=get_one_examination_details($link,$ex_id);
 		$edit_specification=json_decode($examination_details['edit_specification'],true);
 		$help=isset($edit_specification['help'])?$edit_specification['help']:'No help';
+		$interval=isset($edit_specification['interval'])?$edit_specification['interval']:'';
+		
 				echo '<div class="basic_form " id="ex_'.$ex_id.'">';
 		echo '	<div class="my_label border border-dark text-wrap">'.$examination_details['name'].'</div>
-				<div class="border border-dark"><pre class="m-0 p-0 border-0">'.htmlspecialchars($ex_result).'</pre></div>
+				<div class="border border-dark"><pre class="m-0 p-0 border-0">'.htmlspecialchars($ex_result.' '.decide_alert($ex_result,$interval)).'</pre></div>
 				<div class="help border border-dark">'.$help.'</div>';
 				echo '</div>';
 }				
@@ -873,7 +985,7 @@ function save_insert($link)
 	//echo '<pre>following is requested:<br>';print_r($requested);echo '</pre>';
 	foreach ($requested as $ex)
 	{
-			if($ex==1)
+			if($ex==$GLOBALS['mrd'])
 			{
 				//mrd inserted, do nothing
 			}
@@ -910,7 +1022,7 @@ function add_new_examination_and_profile($link,$sample_id,$list_of_selected_exam
 	$list_of_selected_examination=$list_of_selected_examination;
 	foreach ($requested as $ex_requested)
 	{
-			if($ex_requested==1)
+			if($ex_requested==$GLOBALS['mrd'])
 			{
 				//mrd inserted, do nothing
 			}
@@ -951,7 +1063,7 @@ function get_new_sample_id($link,$mrd)
 {
 	$sample_id=find_next_sample_id($link);
 	$sql='insert into result (sample_id,examination_id,result,recording_time,recorded_by)
-			values (\''.$sample_id.'\', \'1\',\''.$mrd.'\',now(),\''.$_SESSION['login'].'\')';
+			values (\''.$sample_id.'\', \''.$GLOBALS['mrd'].'\',\''.$mrd.'\',now(),\''.$_SESSION['login'].'\')';
 	if(!run_query($link,$GLOBALS['database'],$sql))
 		{echo 'Data not inserted(with)<br>'; return false;}
 	else
@@ -1015,13 +1127,13 @@ function echo_report_export_button($sample_id_csv,$report_id)
 
 function echo_class_button($link,$class)
 {
-	$sql='select * from report where report_name=\'OGDC\'';
+	$sql='select * from report where report_name=\''.$class.'\'';
 	$result=run_query($link,$GLOBALS['database'],$sql);
 	$ar=get_single_row($result);
 	$ex_list=explode(',',$ar['examination_id']);
 	$jarray=json_encode($ex_list);
 	//echo $jarray;
-	echo '<div class="d-inline-block "><div class=print_hide><button type=button class="btn btn-info d-inline-block border-danger m-0 p-0" onclick="set_print_class(\''.htmlspecialchars($jarray).'\')">OGDC</button></div></div>';
+	echo '<div class="d-inline-block "><div class=print_hide><button type=button class="btn btn-info d-inline-block border-danger m-0 p-0" onclick="set_print_class(\''.htmlspecialchars($jarray).'\')">'.$class.'</button></div></div>';
 }
 
 
@@ -1040,6 +1152,7 @@ function get_search_condition($link)
 function set_search($link)
 {
 	$ex_requested=explode(',',$_POST['list_of_selected_examination']);
+	//print_r($ex_requested);
 	echo '<form method=post>';
 		foreach($ex_requested as $v)
 		{

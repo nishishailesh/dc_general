@@ -65,10 +65,10 @@
 	.basic_form 
 	{
 	  display: grid;
-	  grid-template-columns: 30% 70%;
+	  grid-template-columns: 25% 40% 35%;
 	}	
 
-	 .help , #main_menu, #root_menu, .data_header, .sh, .print_hide
+	  #main_menu, #root_menu, .data_header, .sh, .print_hide
 	 {
 		 display:none
 	 }

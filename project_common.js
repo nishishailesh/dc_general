@@ -33,6 +33,31 @@ function select_profile_js(me,ex_id,list_id)
 	}
 }
 
+function sync_result(me)
+{
+	//alert(me.getAttribute('data-exid'));
+	target=document.getElementById('r_id_'+me.getAttribute('data-sid')+'_'+me.getAttribute('data-exid'))
+	target.value=me.value
+	var event = new Event('change');
+	target.dispatchEvent(event);
+}
+
+function sync_all()
+{
+	$("[id^=pr_id_]").each(
+	function()
+	{
+		target=document.getElementById('r_id_'+$(this).attr('data-sid')+'_'+$(this).attr('data-exid'))
+		target.value=$(this).val()
+		var event = new Event('change');
+		target.dispatchEvent(event);		
+	}
+	
+	
+	
+	)
+}
+
 function set_print_class(jsn)
 {
 	//alert(jsn)
