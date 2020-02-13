@@ -57,7 +57,8 @@
 	{
 	  display: grid;
 	  grid-template-columns: auto auto auto auto auto auto;
-	}	  
+	}
+	  
 }
 
 @media only print 
@@ -65,10 +66,24 @@
 	.basic_form 
 	{
 	  display: grid;
-	  grid-template-columns: 25% 40% 35%;
+	  grid-template-columns: 40% 60%;
 	}	
 
-	  #main_menu, #root_menu, .data_header, .sh, .print_hide
+	.tc
+	{
+	  display:grid;
+	  grid-template-columns:50% 50%;
+
+	}
+
+        .oc
+        {
+          display:grid;
+          grid-template-columns:100%;
+
+        }
+
+	 .help , #main_menu, #root_menu, .data_header, .sh, .print_hide
 	 {
 		 display:none
 	 }

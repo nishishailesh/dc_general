@@ -1,6 +1,6 @@
 <?php
 $GLOBALS['main_user_location']='/var/gmcs_config/staff.conf';
-$GLOBALS['user_database']='cl_general';
+$GLOBALS['user_database']='dc_general';
 $GLOBALS['user_table']='user';
 $GLOBALS['user_id']='user';
 $GLOBALS['user_pass']='password';
@@ -8,9 +8,8 @@ $GLOBALS['expiry_period']='+ 6 months';
 $GLOBALS['expirydate_field']='expirydate';
 $GLOBALS['application_name']='Clinical Records NCHS';
 
-$GLOBALS['database']='cl_general';
-$GLOBALS['mrd']=1001;
-$GLOBALS['max_non_ex_profile']=20;
+$GLOBALS['database']='dc_general';
+$GLOBALS['mrd']=1;
 
 $GLOBALS['advice']='
 		<ul>

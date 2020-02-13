@@ -1,13 +1,13 @@
--- MySQL dump 10.17  Distrib 10.3.18-MariaDB, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.16  Distrib 10.1.26-MariaDB, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: dc_general
 -- ------------------------------------------------------
--- Server version	10.3.18-MariaDB-0+deb10u1
+-- Server version	10.1.26-MariaDB-0+deb9u1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+/*!40101 SET NAMES utf8 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -58,6 +58,7 @@ CREATE TABLE `profile` (
   `profile_id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL,
   `examination_id_list` varchar(500) NOT NULL,
+  `class` varchar(30) NOT NULL,
   PRIMARY KEY (`profile_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -73,6 +74,7 @@ CREATE TABLE `report` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `report_name` varchar(100) NOT NULL,
   `examination_id` varchar(1000) DEFAULT NULL,
+  `header` varchar(400) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -89,12 +91,12 @@ CREATE TABLE `result` (
   `examination_id` int(11) NOT NULL,
   `result` varchar(5000) DEFAULT NULL,
   `recording_time` datetime DEFAULT NULL,
-  `recorded_by` int(11) DEFAULT NULL,
+  `recorded_by` bigint(11) DEFAULT NULL,
   PRIMARY KEY (`sample_id`,`examination_id`),
   KEY `examination_id` (`examination_id`),
   KEY `recorded_by` (`recorded_by`),
-  CONSTRAINT `result_ibfk_2` FOREIGN KEY (`recorded_by`) REFERENCES `user` (`user`),
-  CONSTRAINT `result_ibfk_4` FOREIGN KEY (`examination_id`) REFERENCES `examination` (`examination_id`)
+  CONSTRAINT `result_ibfk_4` FOREIGN KEY (`examination_id`) REFERENCES `examination` (`examination_id`),
+  CONSTRAINT `result_ibfk_5` FOREIGN KEY (`recorded_by`) REFERENCES `user` (`user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -108,7 +110,7 @@ DROP TABLE IF EXISTS `result_blob`;
 CREATE TABLE `result_blob` (
   `sample_id` bigint(20) NOT NULL,
   `examination_id` int(11) NOT NULL,
-  `result` mediumblob DEFAULT NULL,
+  `result` mediumblob,
   `fname` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`sample_id`,`examination_id`),
   KEY `examination_id` (`examination_id`)
@@ -123,7 +125,7 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
-  `user` int(11) NOT NULL,
+  `user` bigint(11) NOT NULL,
   `name` varchar(100) NOT NULL,
   `password` varchar(1000) NOT NULL,
   `expirydate` date NOT NULL,
@@ -140,4 +142,4 @@ CREATE TABLE `user` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-01-07 22:08:29
+-- Dump completed on 2020-02-13 21:25:05

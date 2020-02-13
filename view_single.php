@@ -9,8 +9,7 @@ $link=get_link($GLOBALS['main_user'],$GLOBALS['main_pass']);
 
 main_menu();
 echo '<div id=response></div>';
-	echo_class_button($link,'Haemogram')	;
-
+	echo_class_button($link,'OGDC')	;
 	view_sample($link,$_POST['sample_id']);
 
 //////////////user code ends////////////////
